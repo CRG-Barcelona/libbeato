@@ -220,19 +220,19 @@
 #define MACHTYPE_x86_64 /**/
 
 /* Name of package */
-#define PACKAGE "bwtool"
+#define PACKAGE "libbeato"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "bwtool"
+#define PACKAGE_NAME "libbeato"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "bwtool 1.0"
+#define PACKAGE_STRING "libbeato 1.0"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "bwtool"
+#define PACKAGE_TARNAME "libbeato"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""

@@ -1,11 +1,11 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([bwtool],[1.0])
+AC_INIT([libbeato],[1.0])
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_SRCDIR([libbeato/metaBig.c])
+AC_CONFIG_SRCDIR([beato/metaBig.c])
 
 # Checks for programs.
 AC_PROG_CC
@@ -131,6 +131,6 @@ AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero dup2 floor getcwd gettimeofday memmove memset mkdir munmap pow putenv regcomp rint select setenv socket sqrt strcasecmp strchr strcspn strdup strerror strrchr strspn strstr strtol tzset uname utime])
 
-AC_CONFIG_FILES([Makefile libbeato/Makefile libjkweb/Makefile])
+AC_CONFIG_FILES([Makefile beato/Makefile jkweb/Makefile])
 
 AC_OUTPUT
