@@ -46,8 +46,51 @@ case $host in
      *)         AC_SUBST([MACHTYPE_WARN],["-Wall -Wformat -Wimplicit -Wreturn-type -Wuninitialized"]) ;;
 esac
 
+# Checks for header files.
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h math.h netinet/in.h pthread.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h zlib.h])
+
 # REQUIRED headers, with some additional checks for libraries
 
+AC_SEARCH_LIBS([pthread_create], [pthread], [has_pthread=yes], [has_pthread=no])
+if test "x${has_pthread}" != xyes; then
+   AC_MSG_ERROR([
+   ---------------------------------------------
+   Unable to find libpthread required for compiling
+   libjkweb.a. Install this and run ./configure
+   with the appropriate LDFLAGS/CFLAGS/etc.
+   See the INSTALL for examples.
+   ---------------------------------------------])
+fi
+AC_SEARCH_LIBS([pow], [m], [has_math=yes], [has_math=no])
+if test "x${has_math}" != xyes; then
+   AC_MSG_ERROR([
+   ---------------------------------------------
+   Unable to find libm (math) required for compiling
+   bambed. Install this and run ./configure
+   with the appropriate LDFLAGS/CFLAGS/etc.
+   See the INSTALL for examples.
+   ---------------------------------------------])
+fi
+AC_SEARCH_LIBS([pow], [m], [has_math=yes], [has_math=no])
+if test "x${has_math}" != xyes; then
+   AC_MSG_ERROR([
+   ---------------------------------------------
+   Unable to find libm (math) required for compiling
+   bambed. Install this and run ./configure
+   with the appropriate LDFLAGS/CFLAGS/etc.
+   See the INSTALL for examples.
+   ---------------------------------------------])
+fi
+AC_SEARCH_LIBS([zlibVersion], [z], [has_zlib=yes], [has_zlib=no])
+if test "x${has_zlib}" != xyes; then
+   AC_MSG_ERROR([
+   ---------------------------------------------
+   Unable to find zlib required for compiling
+   bambed. Install this and run ./configure
+   with the appropriate LDFLAGS/CFLAGS/etc.
+   See the INSTALL for examples.
+   ---------------------------------------------])
+fi
 AC_CHECK_HEADER([png.h], AC_SEARCH_LIBS([png_read_png], [png], [has_png=yes], [has_png=no]), [has_png=no],[])
 if test "x${has_png}" != xyes; then
    AC_MSG_ERROR([
@@ -66,14 +109,18 @@ AC_CHECK_HEADERS([openssl/ssl.h openssl/err.h],[has_ssl=yes],[has_ssl=no],[])
 if test "x${has_ssl}" = xyes; then
    AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])
 fi
-AC_CHECK_HEADER([htslib/sam.h],AC_SEARCH_LIBS([bam_index_build],[hts],[has_htslib=yes],[has_htslib=no]),[has_htslib=no])
-if test "x${has_hts}" = xyes; then
+AC_SEARCH_LIBS([hts_version],[hts],[],[
+AC_MSG_ERROR([
+   ---------------------------------------------
+   Unable to find htslib needed for 
+   libjkweb.a. Install this and run ./configure
+   with the appropriate LDFLAGS/CFLAGS/etc.
+   See the INSTALL for examples.
+   ---------------------------------------------])])
+AC_CHECK_HEADER([bam.h],AC_SEARCH_LIBS([bam_fetch],[bam],[has_bam=yes],[has_bam=no]),[has_bam=no])
+if test "x${has_bam}" = xyes; then
    AC_DEFINE([USE_BAM],[1],[Turn on BAM support])
 fi
-
-# Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h math.h netinet/in.h pthread.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h zlib.h])
-AC_DEFINE([USE_PNG],[1])
 
 # Large file support
 AC_SYS_LARGEFILE
@@ -97,10 +144,8 @@ AC_TYPE_UINT8_T
 # Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_FSEEKO
-AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_MMAP
-AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero dup2 floor getcwd gettimeofday memmove memset mkdir munmap pow putenv regcomp rint select setenv socket sqrt strcasecmp strchr strcspn strdup strerror strrchr strspn strstr strtol tzset uname utime])
 
