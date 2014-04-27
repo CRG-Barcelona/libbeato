@@ -2,19 +2,19 @@
 #include "config.h"
 #endif
 
-#include "common.h"
-#include "obscure.h"
-#include "hash.h"
-#include "linefile.h"
-#include "localmem.h"
-#include "sqlNum.h"
-#include "sig.h"
-#include "dystring.h"
-#include "basicBed.h"
-#include "bigBed.h"
-#include "bigWig.h"
-#include "hmmstats.h"
-#include "bigs.h"
+#include <jkweb/common.h>
+#include <jkweb/obscure.h>
+#include <jkweb/hash.h>
+#include <jkweb/linefile.h>
+#include <jkweb/localmem.h>
+#include <jkweb/sqlNum.h>
+#include <jkweb/sig.h>
+#include <jkweb/dystring.h>
+#include <jkweb/basicBed.h>
+#include <jkweb/bigBed.h>
+#include <jkweb/bigWig.h>
+#include <jkweb/hmmstats.h>
+#include <beato/bigs.h>
 
 #include <limits.h>
 #include <math.h>

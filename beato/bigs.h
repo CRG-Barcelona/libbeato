@@ -2,15 +2,15 @@
 #define BIGS_H
 
 #ifndef HASH_H
-#include "hash.h"
+#include "jkweb/hash.h"
 #endif
 
 #ifndef METABIG_H
-#include "metaBig.h"
+#include "beato/metaBig.h"
 #endif
 
 #ifndef DNASEQ_H
-#include "dnaseq.h"
+#include "jkweb/dnaseq.h"
 #endif
 
 struct perBaseWig

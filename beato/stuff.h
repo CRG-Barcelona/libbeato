@@ -2,7 +2,7 @@
 #define STUFF_H
 
 #ifndef BASICBED_H
-#include "basicBed.h"
+#include "jkweb/basicBed.h"
 #endif
 
 /* Misc stuff */

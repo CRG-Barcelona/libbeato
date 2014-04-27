@@ -2,21 +2,21 @@
 #include "config.h"
 #endif
 
-#include "common.h"
-#include "obscure.h"
-#include "hash.h"
-#include "linefile.h"
-#include "localmem.h"
-#include "sqlNum.h"
-#include "sig.h"
-#include "basicBed.h"
-#include "bigBed.h"
-#include "bigWig.h"
-#include "udc.h"
-#include "bamFile.h"
-#include "rangeTree.h"
-#include "metaBig.h"
-#include "bigs.h"
+#include <jkweb/common.h>
+#include <jkweb/obscure.h>
+#include <jkweb/hash.h>
+#include <jkweb/linefile.h>
+#include <jkweb/localmem.h>
+#include <jkweb/sqlNum.h>
+#include <jkweb/sig.h>
+#include <jkweb/basicBed.h>
+#include <jkweb/bigBed.h>
+#include <jkweb/bigWig.h>
+#include <jkweb/udc.h>
+#include <jkweb/bamFile.h>
+#include <jkweb/rangeTree.h>
+#include <beato/metaBig.h>
+#include <beato/bigs.h>
 
 #ifdef USE_BAM
 
@@ -35,16 +35,21 @@ boolean isBamWithIndex(char *file)
 {
     tmpstruct_t tmp;
     bam_index_t *idx;
+    boolean bam_extension = FALSE;
+    if (endsWith(file, ".bam"))
+	bam_extension = TRUE;
     tmp.beg = 0; 
     tmp.end = 0x7fffffff;  
     tmp.in = samopen(file, "rb", 0);  
     if (!tmp.in)
 	return FALSE;
     idx = bam_index_load(file);
-    if (!idx)
+    samclose(tmp.in);
+    if (!idx && bam_extension)
+	errAbort("file ends in .bam but there is no accompanying index file .bam.bai");
+    else if (!idx)
 	return FALSE;
     bam_index_destroy(idx);
-    samclose(tmp.in);
     return TRUE;
 }
 
@@ -121,7 +126,7 @@ static int bamAddCount(const bam1_t *bam, void *data)
 	return 0;
     if (bamIsRc(bam))
 	strand = '-';
-    if ((mb->useDupes > 1) && (zd_tag))
+    if ((mb->useDupes >= 1) && (zd_tag))
     {
 	char *s = bam_aux2Z(zd_tag);
 	char *num = chopPrefix(s);
@@ -226,6 +231,17 @@ bamUnpackQuerySequence(bam, useStrand, qSeq);
 return qSeq;
 }
 
+static char *lmBamGetDup(const bam1_t *bam, struct lm *lm)
+/* get the duplicate info from the tag */
+{
+const bam1_core_t *core = &bam->core;
+uint8_t *zd_tag = bam_aux_get(bam, "ZD");
+if (zd_tag)
+    return cloneString(bam_aux2Z(zd_tag));
+else 
+    return ".";
+}
+
 static char *lmBamGetQuality(const bam1_t *bam, boolean useStrand, struct lm *lm)
 /* Get quality */
 {
@@ -278,29 +294,19 @@ static boolean filterBam(struct metaBig *mb, const bam1_t *bam, const bam1_core_
 	return TRUE;
     if ((core->flag & BAM_FDUP) && (mb->useDupes <= 1))
 	return TRUE;
-    else if ((core->flag & BAM_FDUP) && (mb->useDupes > 1))
+    else if (mb->useDupes == -1)
+	/* return all reads includings ones marked/tagged as dupes */
+	return FALSE;
+    else if (mb->useDupes >= 1)
     {
 	uint8_t *zd_tag = bam_aux_get(bam, "ZD");
 	if (zd_tag)
 	{
-	    char *s = bam_aux2Z(zd_tag);
+	    char *s = cloneString(bam_aux2Z(zd_tag));
 	    char *num = chopPrefix(s);
 	    unsigned n = sqlUnsigned(num);
+	    freeMem(s);
 	    if (n > mb->useDupes)
-		return TRUE;
-	}
-    }
-    /* SKIP DUPES ... THIS IS TRICKY */
-    /* ONLY TAKE UP TO mb->useDupes */
-    else if (!(core->flag & BAM_FDUP) && (mb->useDupes > 0))
-    {
-	uint8_t *zd_tag = bam_aux_get(bam, "ZD");
-	if (zd_tag)
-	{
-	    char *s = bam_aux2Z(zd_tag);
-	    char *num = chopPrefix(s);
-	    unsigned n = sqlUnsigned(num);
-	    if (n <= mb->useDupes)
 		return TRUE;
 	}
     }
@@ -376,7 +382,9 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 	else if (mb->nameType == basicName)
 	    bed->name = lmBamGetOriginalName(bam, lm);
 	else if (mb->nameType == quality)
-	bed->name = lmBamGetQuality(bam, TRUE, lm);
+	    bed->name = lmBamGetQuality(bam, TRUE, lm);
+	else if (mb->nameType == duplicates)
+	    bed->name = lmBamGetDup(bam, lm);
 	else
 	    bed->name = helper->dot;
 	bed->chrom = helper->chrom;

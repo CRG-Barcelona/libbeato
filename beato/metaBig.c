@@ -2,23 +2,23 @@
 #include "config.h"
 #endif
 
-#include "common.h"
-#include "obscure.h"
-#include "hash.h"
-#include "linefile.h"
-#include "localmem.h"
-#include "sqlNum.h"
-#include "sig.h"
-#include "basicBed.h"
-#include "bigBed.h"
-#include "bigWig.h"
-#include "udc.h"
-#include "rangeTree.h"
-#include "metaBig.h"
-#include "bigs.h"
+#include <jkweb/common.h>
+#include <jkweb/obscure.h>
+#include <jkweb/hash.h>
+#include <jkweb/linefile.h>
+#include <jkweb/localmem.h>
+#include <jkweb/sqlNum.h>
+#include <jkweb/sig.h>
+#include <jkweb/basicBed.h>
+#include <jkweb/bigBed.h>
+#include <jkweb/bigWig.h>
+#include <jkweb/udc.h>
+#include <jkweb/rangeTree.h>
+#include <beato/metaBig.h>
+#include <beato/bigs.h>
 
 #ifdef USE_BAM
-#include "metaBigBam.h"
+#include <beato/metaBigBam.h>
 #endif
 
 /********** functions that may need going into basicBed.ch some day ***************/
@@ -124,6 +124,19 @@ static struct bed *readAtLeastBed3(char *file)
     slReverse(&list);
     lineFileClose(&lf);
     return list;
+}
+
+int bed6Cmp(const void *va, const void *vb)
+/* Compare to sort based on chrom,chromStart. */
+/* copied from bedCmp */
+{
+const struct bed6 *a = *((struct bed6 **)va);
+const struct bed6 *b = *((struct bed6 **)vb);
+int dif;
+dif = strcmp(a->chrom, b->chrom);
+if (dif == 0)
+    dif = a->chromStart - b->chromStart;
+return dif;
 }
 
 void bed6Free(struct bed6 **pEl)

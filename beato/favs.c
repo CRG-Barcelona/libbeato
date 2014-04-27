@@ -5,10 +5,10 @@
 /* library that provides some functionality to the utilities for keeping track of */
 /* files and URLs easily */
 
-#include "common.h"
-#include "linefile.h"
-#include "hash.h"
-#include "favs.h"
+#include <jkweb/common.h>
+#include <jkweb/linefile.h>
+#include <jkweb/hash.h>
+#include <beato/favs.h>
 
 struct hash *favs_load_hash(char *filename)
 /* load up the favorites hash from the file. NULL filename loads the default. */

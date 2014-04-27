@@ -2,16 +2,16 @@
 #include "config.h"
 #endif
 
-#include "common.h"
-#include "obscure.h"
-#include "hash.h"
-#include "localmem.h"
-#include "sqlNum.h"
-#include "basicBed.h"
-#include "genomeRangeTree.h"
-#include "metaBig.h"
-#include "bigs.h"
-#include "extrema.h"
+#include <jkweb/common.h>
+#include <jkweb/obscure.h>
+#include <jkweb/hash.h>
+#include <jkweb/localmem.h>
+#include <jkweb/sqlNum.h>
+#include <jkweb/basicBed.h>
+#include <jkweb/genomeRangeTree.h>
+#include <beato/metaBig.h>
+#include <beato/bigs.h>
+#include <beato/extrema.h>
 
 struct extrema *extrema_new(char *chrom, int chromStart, double val, boolean isMax)
 /* create an extrema struct and return it */

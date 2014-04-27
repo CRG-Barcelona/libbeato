@@ -2,7 +2,7 @@
 #define FAVS_H
 
 #ifndef HASH_H
-#include "hash.h"
+#include "jkweb/hash.h"
 #endif
 
 #define FAVS_FILE "~/.favorites.txt"

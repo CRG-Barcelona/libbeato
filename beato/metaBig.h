@@ -5,19 +5,19 @@
 #define METABIG_H
 
 #ifndef HASH_H
-#include "hash.h"
+#include "jkweb/hash.h"
 #endif
 
 #ifndef BBIFILE_H
-#include "bbiFile.h"
+#include "jkweb/bbiFile.h"
 #endif
 
 #ifndef BIGBED_H
-#include "bigBed.h"
+#include "jkweb/bigBed.h"
 #endif
 
 #ifdef USE_BAM
-#include "bamFile.h"
+#include "jkweb/bamFile.h"
 #include "sam.h"
 #include "bam.h"
 #endif
@@ -39,6 +39,7 @@ enum metaBigNameType
     sequence = 1,   /* use sequence (if available) */
     basicName = 2,  /* use query name if BAM, or bed name if bed */
     quality = 3,    /* use sanger quality string (if available) */
+    duplicates = 4, /* use the info from the duplicate ZD:Z tag */
 };
 
 struct bamFlagCounts
@@ -132,7 +133,7 @@ struct metaBigBed6Helper
     };
 
 #ifdef USE_BAM
-#include "metaBigBam.h"
+#include "beato/metaBigBam.h"
 #endif
 
 struct bed6 *readBed6(char *file);
@@ -143,6 +144,10 @@ struct bed6 *readBed6SoftAndSize(char *file, int *orig_size);
 
 struct bed6 *readBed6Soft(char *file);
 /* read from a file.  If it's missing fields, fill the bed */
+
+int bed6Cmp(const void *va, const void *vb);
+/* Compare to sort based on chrom,chromStart. */
+/* copied from bedCmp */
 
 void bed6Free(struct bed6 **pEl);
 /* Free a single dynamically allocated bed such as created
@@ -196,6 +201,9 @@ long metaBigNumItems(struct metaBig *mb, boolean verbose);
 /* unfortunately this is a loop through the entire file basically. */
 /* nicer would be something that just glances at the index, but doing that */
 /* might count items that would be filtered out upon fetching. */
+
+long metaBigFiftyCount(struct metaBig *mb, char *chrom, unsigned start, unsigned end);
+/* the main counter */
 
 void metaBigPrintFlagCounts(struct metaBig *mb, char *file, boolean clear);
 /* Print out the counts of the flags encountered with the last fetch function. */

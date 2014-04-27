@@ -2,12 +2,12 @@
 #include "config.h"
 #endif
 
-#include "common.h"
-#include "hash.h"
-#include "linefile.h"
-#include "localmem.h"
-#include "sqlNum.h"
-#include "fastq_stuff.h"
+#include <jkweb/common.h>
+#include <jkweb/hash.h>
+#include <jkweb/linefile.h>
+#include <jkweb/localmem.h>
+#include <jkweb/sqlNum.h>
+#include <beato/fastq_stuff.h>
 
 boolean read_fastq_auto(struct fastq_auto *fq, struct lineFile *lf, boolean just_seq_qual)
 /* fill in fastq struct from open lineFile.  return FALSE if at EOF */

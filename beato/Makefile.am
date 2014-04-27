@@ -2,7 +2,6 @@ AM_CFLAGS = @MACHTYPE_WARN@ -fno-strict-aliasing
 
 lib_LIBRARIES = libbeato.a
 
-libbeato_a_CFLAGS = -I$(top_srcdir)/jkweb
 libbeato_a_SOURCES = \
 	bigs.c \
 	bigs.h \
@@ -25,4 +24,3 @@ libbeato_a_SOURCES = \
 	sax.h \
 	stuff.c \
 	stuff.h
-
