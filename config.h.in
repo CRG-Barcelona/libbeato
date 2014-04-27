@@ -49,6 +49,9 @@
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
+
 /* Define to 1 if you have the `memmove' function. */
 #undef HAVE_MEMMOVE
 
@@ -73,8 +76,17 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
+/* Define to 1 if you have the <openssl/err.h> header file. */
+#undef HAVE_OPENSSL_ERR_H
+
+/* Define to 1 if you have the <openssl/ssl.h> header file. */
+#undef HAVE_OPENSSL_SSL_H
+
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
 
 /* Define to 1 if you have the `putenv' function. */
 #undef HAVE_PUTENV
@@ -197,6 +209,9 @@
 /* Define to 1 if `vfork' works. */
 #undef HAVE_WORKING_VFORK
 
+/* Define to 1 if you have the <zlib.h> header file. */
+#undef HAVE_ZLIB_H
+
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -245,7 +260,7 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
-/* Turning on BAM support */
+/* Turn on BAM support */
 #undef USE_BAM
 
 /* Turn on PNG support in pngwrite.c */
