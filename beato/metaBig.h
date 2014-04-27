@@ -18,8 +18,6 @@
 
 #ifdef USE_BAM
 #include "jkweb/bamFile.h"
-#include "sam.h"
-#include "bam.h"
 #endif
 
 enum metaBigFileType

@@ -270,7 +270,6 @@ struct perBaseWig *perBaseWigLoadContinue(struct metaBig *mb, char *chrom, int s
     {
 	struct perBaseWig *region;
 	struct bbiInterval *cur;
-	int size = 0;
 	int i = 0;
 	bbEnd = bbStart;
 	/* loop until discontinuity detected */
@@ -320,7 +319,6 @@ static void perBaseWigLoadHugeContinue(struct metaBig *mb, struct perBaseWig *bi
 /* in with NA value */
 {
     struct perBaseWig *list = NULL;
-    double na = NANUM;
     int s = section->chromStart;
     int e = section->chromEnd;
     if (!hashFindVal(mb->chromSizeHash, section->chrom))
@@ -378,7 +376,6 @@ struct perBaseWig *perBaseWigLoadSingleContinue(struct metaBig *mb, char *chrom,
     int size = end - start;
     int i, j;
     int s = start, e = end;
-    double na = NANUM;
     if (!hashFindVal(mb->chromSizeHash, chrom))
     {
 	/* if the chrom isn't in the bigWig's chrom-size hash, return values of NA */
@@ -939,19 +936,10 @@ struct middles *metaBig_get_middles(struct metaBig *mb, char *chrom, unsigned st
     return mids;
 }
 
-static boolean local_file(char *filename)
+/* static boolean local_file(char *filename) */
 /* return TRUE if the file is avialable locally */
-{
-    char *s = cloneString(filename);
-    char *colon = strchr(s, ':');
-    boolean ret = FALSE;
-    if (colon)
-	*colon = '\0';
-    if (fileExists(s))
-	ret = TRUE;
-    freeMem(s);
-    return ret;
-}
+/* ** deleted, but check git's memory if it's ** */
+/* ** ever needed again. ** */
 
 struct bed *metaBig_chopGenome(struct metaBig *mb, int size)
 /* return a bed of regularly-sized intervals (given) from the chromSizeHash */

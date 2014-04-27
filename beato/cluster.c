@@ -150,7 +150,6 @@ static int *k_means(struct cluster_bed_matrix *cbm, double t)
     int n = cbm->n;
     int m = cbm->m;
     int k = cbm->k;
-    int pass = 1;
     AllocArray(labels, n);
     AllocArray(tmp_centroids, k);
     for (i = 0; i < k; i++)
@@ -230,31 +229,9 @@ int sortoriglabel(const void *a, const void *b)
     return row_a[1] - row_b[1];
 }
 
-static void exchange_labels(int *cluster_sizes, int k, int *labels, int start, int size)
+/* static void exchange_labels(int *cluster_sizes, int k, int *labels, int start, int size) */
 /* rename labels based on size */
-{
-    int **array;
-    int i;
-    AllocArray(array, k);
-    for (i = 0; i < k; i++)
-    {
-	AllocArray(array[i], 3);
-	array[i][0] = cluster_sizes[i];
-	array[i][1] = i;
-    }
-    qsort(array, k, sizeof(int *), sortthesize);
-    for (i = 0; i < k; i++)
-    {
-	array[i][2] = i;
-	cluster_sizes[i] = array[i][0];
-    }
-    qsort(array, k, sizeof(int *), sortoriglabel);
-    for (i = start; i < size; i++)
-	labels[i] = array[labels[i]][2];
-    for (i = 0; i < k; i++)
-	freeMem(array[i]);
-    freeMem(array);
-}
+/* ** deleted ** */ 
 
 void do_kmeans_sort(struct cluster_bed_matrix *cbm, double t, boolean sort)
 /* clusters but also sorts the labels by cluster size */

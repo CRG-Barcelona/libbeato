@@ -12,8 +12,8 @@
 #ifndef _IOLIB
 #define _IOLIB 2
 #endif
-#include "bam.h"
-#include "sam.h"
+
+#include "htslib/sam.h"
 
 #else // no USE_BAM
 typedef struct { } bam1_t;

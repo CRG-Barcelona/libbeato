@@ -46,43 +46,13 @@ case $host in
      *)         AC_SUBST([MACHTYPE_WARN],["-Wall -Wformat -Wimplicit -Wreturn-type -Wuninitialized"]) ;;
 esac
 
-# REQUIRED libraries
+# REQUIRED headers, with some additional checks for libraries
 
-AC_SEARCH_LIBS([pthread_create], [pthread], [has_pthread=yes], [has_pthread=no])
-if test "x${has_pthread}" != xyes; then
-   AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find libpthread required for compiling
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_SEARCH_LIBS([pow], [m], [has_math=yes], [has_math=no])
-if test "x${has_math}" != xyes; then
-   AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find libm (math) required for compiling
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_SEARCH_LIBS([zlibVersion], [z], [has_zlib=yes], [has_zlib=no])
-if test "x${has_zlib}" != xyes; then
-   AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find zlib required for compiling
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_SEARCH_LIBS([png_read_png], [png], [has_png=yes], [has_png=no])
+AC_CHECK_HEADER([png.h], AC_SEARCH_LIBS([png_read_png], [png], [has_png=yes], [has_png=no]), [has_png=no],[])
 if test "x${has_png}" != xyes; then
    AC_MSG_ERROR([
    ---------------------------------------------
-   Unable to find libpng required for compiling
+   Unable to find png.h or libpng for
    libjkweb.a. Install this and run ./configure
    with the appropriate LDFLAGS/CFLAGS/etc.
    See the INSTALL for examples.
@@ -91,16 +61,19 @@ fi
 if test "x${has_png}" = xyes; then
    AC_DEFINE([USE_PNG],[1],[Turn on PNG support in pngwrite.c])
 fi
-AC_SEARCH_LIBS([SSL_accept], [ssl], [has_ssl=yes], [has_ssl=no])
-AC_SEARCH_LIBS([SHA1_Init], [crypto], [has_ssl=yes], [has_ssl=no])
+
+AC_CHECK_HEADERS([openssl/ssl.h openssl/err.h],[has_ssl=yes],[has_ssl=no],[])
 if test "x${has_ssl}" = xyes; then
    AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])
 fi
-AC_SEARCH_LIBS([hts_parse_reg],[hts],[],[AC_MSG_ERROR([libhtsneeds to be installed])])
-AC_SEARCH_LIBS([bam_fetch],[bam],[AC_DEFINE([USE_BAM],[1],[Turning on BAM support])],[AC_MSG_ERROR([libbam from samtools needs to be installed])])
+AC_CHECK_HEADER([htslib/sam.h],AC_SEARCH_LIBS([bam_index_build],[hts],[has_htslib=yes],[has_htslib=no]),[has_htslib=no])
+if test "x${has_hts}" = xyes; then
+   AC_DEFINE([USE_BAM],[1],[Turn on BAM support])
+fi
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h math.h netinet/in.h pthread.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h zlib.h])
+AC_DEFINE([USE_PNG],[1])
 
 # Large file support
 AC_SYS_LARGEFILE
