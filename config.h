@@ -247,7 +247,7 @@
 #define TIME_WITH_SYS_TIME 1
 
 /* Turning on BAM support */
-#define USE_BAM 1
+/* #undef USE_BAM */
 
 /* Turn on PNG support in pngwrite.c */
 #define USE_PNG 1

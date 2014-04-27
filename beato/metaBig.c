@@ -560,7 +560,6 @@ static struct bed *regionsLoad(char *sectionsBed)
 {
     struct bed *list = NULL;
     unsigned ix = 0;
-    char *comma = NULL;
     if (strchr(sectionsBed, ','))
     {
 	char *number_part = chopPrefixAt(sectionsBed, ',');

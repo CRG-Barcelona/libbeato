@@ -4742,8 +4742,6 @@ ac_res=$ac_cv_search_hts_parse_reg
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
-else
-  as_fn_error $? "libhtsneeds to be installed" "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing bam_fetch" >&5
@@ -4802,8 +4800,6 @@ if test "$ac_res" != no; then :
 
 $as_echo "#define USE_BAM 1" >>confdefs.h
 
-else
-  as_fn_error $? "libbam from samtools needs to be installed" "$LINENO" 5
 fi
 
 

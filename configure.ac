@@ -96,8 +96,8 @@ AC_SEARCH_LIBS([SHA1_Init], [crypto], [has_ssl=yes], [has_ssl=no])
 if test "x${has_ssl}" = xyes; then
    AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])
 fi
-AC_SEARCH_LIBS([hts_parse_reg],[hts],[],[AC_MSG_ERROR([libhtsneeds to be installed])])
-AC_SEARCH_LIBS([bam_fetch],[bam],[AC_DEFINE([USE_BAM],[1],[Turning on BAM support])],[AC_MSG_ERROR([libbam from samtools needs to be installed])])
+AC_SEARCH_LIBS([hts_parse_reg],[hts],[],[])
+AC_SEARCH_LIBS([bam_fetch],[bam],[AC_DEFINE([USE_BAM],[1],[Turning on BAM support])],[])
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h])
