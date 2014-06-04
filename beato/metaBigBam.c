@@ -416,7 +416,16 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 		    return 0;
 		lmAllocVar(lm, bed);
 		metaBigAddBamFlagCounts(mb, core);
-		bed->name = helper->dot;
+		if (mb->nameType == sequence)
+		    bed->name = lmBamGetQuerySequence(bam, TRUE, lm);
+		else if (mb->nameType == basicName)
+		    bed->name = lmBamGetOriginalName(bam, lm);
+		else if (mb->nameType == quality)
+		    bed->name = lmBamGetQuality(bam, TRUE, lm);
+		else if (mb->nameType == duplicates)
+		    bed->name = lmBamGetDup(bam, lm);
+		else
+		    bed->name = helper->dot;
 		bed->chrom = helper->chrom;
 		bed->chromStart = start;
 		bed->chromEnd = end;
@@ -458,6 +467,7 @@ static int bamAddPairbed(const bam1_t *bam, void *data)
     struct pairbed *pb;
     int start;
     char strand = '+';
+    char mstrand = '+';
     struct metaBig *mb = helper->mb;
     const bam1_core_t *core = &bam->core;
     if (filterBam(mb, bam, core))
@@ -467,8 +477,10 @@ static int bamAddPairbed(const bam1_t *bam, void *data)
     if (!mb->useBothReads && (!(core->flag & BAM_FREAD1)))
 	return 0;
     /* check whitelist/blacklist */
-    if (bamIsRc(bam))
+    if (core->flag & BAM_FREVERSE)
 	strand = '-';
+    if (core->flag & BAM_FMREVERSE)
+	mstrand = '-';    
     start = core->pos;
     /* filter out ones that go out-of-bounds after shifting/extending */
     /* ok fine, we're adding it to the bed. */
@@ -479,6 +491,8 @@ static int bamAddPairbed(const bam1_t *bam, void *data)
     pb->score = 1000;
     pb->strand[0] = strand;
     pb->strand[1] = '\0';
+    pb->mstrand[0] = mstrand;
+    pb->mstrand[1] = '\0';    
     pb->mChrom = helper->header->target_name[core->mtid];
     pb->mChromStart = core->mpos;
     slAddHead(&helper->pbList, pb);

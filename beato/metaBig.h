@@ -104,6 +104,7 @@ struct pairbed
     char strand[2];
     char *mChrom;
     unsigned mChromStart;
+    char mstrand[2];
 };
 
 struct bed6
