@@ -16,8 +16,8 @@
 #include "jkweb/bigBed.h"
 #endif
 
-#ifdef USE_BAM
-#include "jkweb/bamFile.h"
+#ifdef USE_HTSLIB
+#include <htslib/sam.h>
 #endif
 
 enum metaBigFileType
@@ -36,16 +36,17 @@ enum metaBigNameType
     justADot = 0,   /* (default) name with a '.' because often the names aren't needed */
     sequence = 1,   /* use sequence (if available) */
     basicName = 2,  /* use query name if BAM, or bed name if bed */
-    quality = 3,    /* use sanger quality string (if available) */
-    duplicates = 4, /* use the info from the duplicate ZD:Z tag */
+    duplicates = 3, /* use the info from the duplicate ZD:Z tag */
 };
 
+#ifdef USE_HTSLIB
 struct bamFlagCounts
 /* keep track of types of bams encountered */
 {
     long type_count[2048];
     long bit_count[11];
 };
+#endif
 
 struct metaBig
 /* hold all the info we might ever need if it's a big */
@@ -54,8 +55,8 @@ struct metaBig
     enum metaBigFileType type;     /* important thing to know what kinda file it is */
     union
     {                              /* should only be one of these things */
-#ifdef USE_BAM
-	samfile_t *bam;       
+#ifdef USE_HTSLIB
+	samFile *bam;       
 #endif
 	struct bbiFile *bbi;
     } big;
@@ -87,10 +88,10 @@ struct metaBig
     struct hash *rgList;           /* just a list of read-groups to restrict to (a black or whitelist)  */
     boolean rgListIsBlack;         /* by default the list is a whitelist, otherwise it's a blacklist if */
                                    /* this is TRUE. */
-#ifdef USE_BAM
-    bam_index_t *idx;              /* NULL if not a BAM file */ 
+#ifdef USE_HTSLIB
+    hts_idx_t *idx;              /* NULL if not a BAM file */ 
     struct bamFlagCounts bc;       /* counts of the flags of the used reads */ 
-    bam_header_t *header;          /* header info */
+    bam_hdr_t *header;          /* header info */
 #endif
 };
 
@@ -131,7 +132,7 @@ struct metaBigBed6Helper
     struct bed6 *bedList;	/* List of alignments. */
     };
 
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
 #include "beato/metaBigBam.h"
 #endif
 

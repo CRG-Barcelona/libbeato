@@ -109,17 +109,9 @@ AC_CHECK_HEADERS([openssl/ssl.h openssl/err.h],[has_ssl=yes],[has_ssl=no],[])
 if test "x${has_ssl}" = xyes; then
    AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])
 fi
-AC_SEARCH_LIBS([hts_version],[hts],[],[
-AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find htslib needed for 
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])])
-AC_CHECK_HEADER([bam.h],AC_SEARCH_LIBS([bam_fetch],[bam],[has_bam=yes],[has_bam=no]),[has_bam=no])
-if test "x${has_bam}" = xyes; then
-   AC_DEFINE([USE_BAM],[1],[Turn on BAM support])
+AC_SEARCH_LIBS([hts_version],[hts],[has_htslib=yes],[has_htslib=no])
+if test "x${has_htslib}" = xyes; then
+   AC_DEFINE([USE_HTSLIB],[1],[Turn on htslib support])
 fi
 
 # Large file support

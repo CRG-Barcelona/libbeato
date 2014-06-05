@@ -8,7 +8,7 @@ boolean isBamWithIndex(char *file);
 /* attempt to open a BAM file and its index. if everything is ok, */
 /* return TRUE before closing. */
 
-bam_header_t *bamGetHeaderOnly(char *file);
+bam_hdr_t *bamGetHeaderOnly(char *file);
 /* just get the header, close the BAM */
 
 struct hash *bamChromSizes(char *bamfile);

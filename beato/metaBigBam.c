@@ -12,57 +12,48 @@
 #include <jkweb/basicBed.h>
 #include <jkweb/bigBed.h>
 #include <jkweb/bigWig.h>
-#include <jkweb/udc.h>
-#include <jkweb/bamFile.h>
 #include <jkweb/rangeTree.h>
 #include <beato/metaBig.h>
 #include <beato/bigs.h>
 
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
+
+#include <htslib/sam.h>
 
 /* functions for bam-related things, which are separate here in case samtools isn't linked */
-
-/**** file-sniffing code ****/
-
-typedef struct {  
-    int beg, end;  
-    samfile_t *in;  
-} tmpstruct_t;
 
 boolean isBamWithIndex(char *file)
 /* attempt to open a BAM file and its index. if everything is ok, */
 /* return TRUE before closing. */
 {
-    tmpstruct_t tmp;
-    bam_index_t *idx;
+    hts_idx_t *idx;
+    samFile *in;
     boolean bam_extension = FALSE;
     if (endsWith(file, ".bam"))
 	bam_extension = TRUE;
-    tmp.beg = 0; 
-    tmp.end = 0x7fffffff;  
-    tmp.in = samopen(file, "rb", 0);  
-    if (!tmp.in)
+    in = sam_open(file, "r");  
+    if (!in)
 	return FALSE;
     idx = bam_index_load(file);
-    samclose(tmp.in);
+    sam_close(in);
     if (!idx && bam_extension)
 	errAbort("file ends in .bam but there is no accompanying index file .bam.bai");
     else if (!idx)
 	return FALSE;
-    bam_index_destroy(idx);
+    hts_idx_destroy(idx);
     return TRUE;
 }
 
-bam_header_t *bamGetHeaderOnly(char *file)
+bam_hdr_t *bamGetHeaderOnly(char *file)
 /* just get the header, close the BAM */
 {
-    bamFile fp;
-    bam_header_t *header;
-    fp = bam_open(file, "r");
+    samFile *fp;
+    bam_hdr_t *header;
+    fp = sam_open(file, "r");
     if (!fp)
 	errAbort("failed to open BAM file %s", file);
-    header = bam_header_read(fp);
-    bam_close(fp);
+    header = sam_hdr_read(fp);
+    sam_close(fp);
     return header;
 }
 
@@ -71,10 +62,10 @@ struct hash *bamChromSizes(char *bamfile)
 {
     int i;
     struct hash *cHash = newHash(10);
-    bam_header_t *header = bamGetHeaderOnly(bamfile);
+    bam_hdr_t *header = bamGetHeaderOnly(bamfile);
     for (i = 0; i < header->n_targets; i++)
 	hashAddInt(cHash, header->target_name[i], (int)header->target_len[i]);
-    bam_header_destroy(header);
+    bam_hdr_destroy(header);
     return cHash;
 }
 
@@ -124,7 +115,7 @@ static int bamAddCount(const bam1_t *bam, void *data)
     /* check whitelist/blacklist */
     if ((rg) && (mb->rgList) && ((!mb->rgListIsBlack && !hashLookup(mb->rgList, rg)) || (mb->rgListIsBlack && hashLookup(mb->rgList, rg))))
 	return 0;
-    if (bamIsRc(bam))
+    if (core->flag & BAM_FREVERSE)
 	strand = '-';
     if ((mb->useDupes >= 1) && (zd_tag))
     {
@@ -150,11 +141,11 @@ static int bamAddCount(const bam1_t *bam, void *data)
 	    else if (core->isize > 0)
 		end = start + core->isize;
 	    else 
-		end = bam_calend(core, bam1_cigar(bam));
+		end = bam_endpos(bam);
 	}
 	else
 	{
-	    end = bam_calend(core, bam1_cigar(bam));
+	    end = bam_endpos(bam);
 	    if (mb->length > 0)
 		start = end - mb->length;
 	    else if (core->isize > 0)
@@ -192,6 +183,27 @@ static int bamAddCount(const bam1_t *bam, void *data)
     return 0;
 }
 
+/* from Angie's bamFile.c */
+void bamFetchAlreadyOpen(samFile *samfile, hts_idx_t *idx, bam_hdr_t *header, 
+			 char *position, int (addFunc)(const bam1_t *, void *), void *data)
+/* With the open bam file, return items the same way with the callbacks as with bamFetch() */
+/* except in this case use an already-open bam file and index (use bam_index_load and free() for */
+/* the index). It seems a little strange to pass the filename in with the open bam, but */
+/* it's just used to report errors. */
+{
+    bam1_t *b = bam_init1();
+    hts_itr_t *iter = sam_itr_querys(idx, header, position);
+    int r;
+    while ((r = bam_itr_next(samfile, iter, b)) >= 0)
+    {
+	int ret = addFunc(b, data);
+	if (ret != 0)
+	    warn("problems");
+    }
+    hts_itr_destroy(iter);
+    bam_destroy1(b);
+}
+
 long bamCount(struct metaBig *mb, char *chrom, unsigned start, unsigned end)
 /* the main fetcher of counts of bams */
 {
@@ -201,7 +213,7 @@ long bamCount(struct metaBig *mb, char *chrom, unsigned start, unsigned end)
     helper.count = 0;
     helper.chromSize = hashIntVal(mb->chromSizeHash, chrom);
     safef(posForBam, sizeof(posForBam), "%s:%d-%d", chrom, start, end);
-    bamFetchAlreadyOpen(mb->big.bam, mb->idx, mb->fileName, posForBam, bamAddCount, &helper);
+    bamFetchAlreadyOpen(mb->big.bam, mb->idx, mb->header, posForBam, bamAddCount, &helper);
     return helper.count;
 }
 
@@ -211,7 +223,7 @@ struct metaBigPairbedHelper
     char *chrom;
     char *dot;
     int chromSize;
-    bam_header_t *header;
+    bam_hdr_t *header;
     struct metaBig *mb;
     struct pairbed *pbList;
 };
@@ -226,36 +238,23 @@ static char *lmBamGetQuerySequence(const bam1_t *bam, boolean useStrand, struct 
 const bam1_core_t *core = &bam->core;
 int qLen = core->l_qseq;
 char *qSeq;
+int i;
+uint8_t *seq;
 lmAllocArray(lm, qSeq, qLen+1);
-bamUnpackQuerySequence(bam, useStrand, qSeq);
+seq = bam_get_seq(bam);
+for (i = 0; i < qLen; i++)
+    qSeq[i] = bam_seqi(seq, i);
 return qSeq;
 }
 
 static char *lmBamGetDup(const bam1_t *bam, struct lm *lm)
 /* get the duplicate info from the tag */
 {
-const bam1_core_t *core = &bam->core;
 uint8_t *zd_tag = bam_aux_get(bam, "ZD");
 if (zd_tag)
     return cloneString(bam_aux2Z(zd_tag));
 else 
     return ".";
-}
-
-static char *lmBamGetQuality(const bam1_t *bam, boolean useStrand, struct lm *lm)
-/* Get quality */
-{
-const bam1_core_t *core = &bam->core;
-int qLen = core->l_qseq;
-char *qSeq;
-int i;
-UBYTE *arr = bamGetQueryQuals(bam, useStrand);
-lmAllocArray(lm, qSeq, qLen+1);
-for (i = 0; i < qLen; i++)
-    qSeq[i] = (char)(arr[i]+33);
-qSeq[qLen] = '\0';
-freeMem(arr);
-return qSeq;
 }
 
 static char *lmBamGetOriginalName(const bam1_t *bam, struct lm *lm)
@@ -264,7 +263,7 @@ static char *lmBamGetOriginalName(const bam1_t *bam, struct lm *lm)
  * so if useStrand is given we rev-comp it back to restore the original query 
  * sequence. */
 {
-    return lmCloneString(lm, bam1_qname(bam));
+    return lmCloneString(lm, bam_get_qname(bam));
 }
 
 static boolean filterBam(struct metaBig *mb, const bam1_t *bam, const bam1_core_t *core)
@@ -344,7 +343,7 @@ static int bamAddBed6(const bam1_t *bam, void *data)
     /* don't consider if filtered */
     if (filterBam(mb, bam, core))
 	return 0;
-    if (bamIsRc(bam))
+    if (core->flag & BAM_FREVERSE)
 	strand = '-';
     /* check single or paired-end */
     if ((!(core->flag & BAM_FPAIRED)) || (core->flag & BAM_FMUNMAP))
@@ -361,11 +360,11 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 	    else if (core->isize > 0)
 		end = start + core->isize;
 	    else 
-		end = bam_calend(core, bam1_cigar(bam));
+		end = bam_endpos(bam);
 	}
 	else
 	{
-	    end = bam_calend(core, bam1_cigar(bam));
+	    end = bam_endpos(bam);
 	    if (mb->length > 0)
 		start = end - mb->length;
 	    else if (core->isize > 0)
@@ -381,8 +380,6 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 	    bed->name = lmBamGetQuerySequence(bam, TRUE, lm);
 	else if (mb->nameType == basicName)
 	    bed->name = lmBamGetOriginalName(bam, lm);
-	else if (mb->nameType == quality)
-	    bed->name = lmBamGetQuality(bam, TRUE, lm);
 	else if (mb->nameType == duplicates)
 	    bed->name = lmBamGetDup(bam, lm);
 	else
@@ -420,8 +417,6 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 		    bed->name = lmBamGetQuerySequence(bam, TRUE, lm);
 		else if (mb->nameType == basicName)
 		    bed->name = lmBamGetOriginalName(bam, lm);
-		else if (mb->nameType == quality)
-		    bed->name = lmBamGetQuality(bam, TRUE, lm);
 		else if (mb->nameType == duplicates)
 		    bed->name = lmBamGetDup(bam, lm);
 		else
@@ -453,7 +448,7 @@ struct bed6 *bamBed6Fetch(struct metaBig *mb, char *chrom, unsigned start, unsig
     helper.mb = mb;
     helper.chromSize = hashIntVal(mb->chromSizeHash, chrom);
     safef(posForBam, sizeof(posForBam), "%s:%d-%d", chrom, start, end);
-    bamFetchAlreadyOpen(mb->big.bam, mb->idx, mb->fileName, posForBam, bamAddBed6, &helper);
+    bamFetchAlreadyOpen(mb->big.bam, mb->idx, mb->header, posForBam, bamAddBed6, &helper);
     slReverse(&helper.bedList);
     return helper.bedList;
 }
@@ -512,7 +507,7 @@ struct pairbed *bamPairbedFetch(struct metaBig *mb, char *chrom, unsigned start,
     helper.header = mb->header;
     helper.chromSize = hashIntVal(mb->chromSizeHash, chrom);
     safef(posForBam, sizeof(posForBam), "%s:%d-%d", chrom, start, end);
-    bamFetchAlreadyOpen(mb->big.bam, mb->idx, mb->fileName, posForBam, bamAddPairbed, &helper);
+    bamFetchAlreadyOpen(mb->big.bam, mb->idx, mb->header, posForBam, bamAddPairbed, &helper);
     slReverse(&helper.pbList);
     return helper.pbList;
 }
@@ -569,4 +564,4 @@ void metaBigPrintFlagCounts(struct metaBig *mb, char *file, boolean clear)
     if (file)
 	carefulClose(&output);
 }
-#endif /* USE_BAM */
+#endif /* USE_HTSLIB */
