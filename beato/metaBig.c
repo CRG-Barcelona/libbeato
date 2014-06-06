@@ -17,7 +17,8 @@
 #include <beato/metaBig.h>
 #include <beato/bigs.h>
 
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
+#include <htslib/sam.h>
 #include <beato/metaBigBam.h>
 #endif
 
@@ -219,7 +220,7 @@ enum metaBigFileType sniffBigFile(char *filename)
     enum metaBigFileType ft = isBigWigOrBed(filename);
     if ((ft == isaBigBed) || (ft == isaBigWig))
 	return ft;
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (isBamWithIndex(filename))
 	return isaBam;
 #endif
@@ -611,15 +612,12 @@ struct metaBig *metaBigOpen(char *fileOrUrlwSections, char *sectionsBed)
 	mb->chromSizeHash = bbiChromSizes(mb->big.bbi);
 	mb->numReads = bigBedItemCount(mb->big.bbi);
     }
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     else if (mb->type == isaBam)
     {
-	char *anotherFileName = NULL;
 	mb->chromSizeHash = bamChromSizes(mb->fileName);
 	mb->header = bamGetHeaderOnly(mb->fileName);
-	mb->big.bam = bamOpen(mb->fileName, &anotherFileName);
-	if (!sameString(mb->fileName, anotherFileName))
-	    mb->fileName = anotherFileName;
+	mb->big.bam = sam_open(mb->fileName, "r");
 	/* Also need to load the index since it's a bam */
 	mb->idx = bam_index_load(mb->fileName);
 	metaBigBamFlagCountsInit(mb);
@@ -676,21 +674,21 @@ void metaBigClose(struct metaBig **pMb)
 	freeMem(mb->baseFileName);
     if (mb->remoteSiteAndDir)
 	freeMem(mb->remoteSiteAndDir);
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (mb->idx)
-	bam_index_destroy(mb->idx);
+	hts_idx_destroy(mb->idx);
 #endif
     if (mb->type == isaBigBed)
 	bigBedFileClose(&mb->big.bbi);
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     else if (mb->type == isaBam)
-	samclose(mb->big.bam);
+	sam_close(mb->big.bam);
 #endif
     else
 	bigWigFileClose(&mb->big.bbi);
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (mb->header)
-	bam_header_destroy(mb->header);
+	bam_hdr_destroy(mb->header);
 #endif
     freez(pMb);
 }
@@ -741,7 +739,7 @@ struct bed6 *metaBigBed6Fetch(struct metaBig *mb, char *chrom, unsigned start, u
 {
     if (mb->type == isaBigBed)
 	return bigBedBed6Fetch(mb, chrom, start, end, lm);
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (mb->type == isaBam)
 	return bamBed6Fetch(mb, chrom, start, end, lm);
 #endif
@@ -753,7 +751,7 @@ struct pairbed *metaBigPairbedFetch(struct metaBig *mb, char *chrom, unsigned st
 {
     if (mb->type == isaBigBed)
 	errAbort("bigBed not supported yet");
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (mb->type == isaBam)
 	return bamPairbedFetch(mb, chrom, start, end, lm);
 #endif
@@ -765,7 +763,7 @@ long metaBigCount(struct metaBig *mb, char *chrom, unsigned start, unsigned end)
 {
     if (mb->type == isaBigBed)
 	return bigBedCount(mb, chrom, start, end, FALSE);
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (mb->type == isaBam)
 	return bamCount(mb, chrom, start, end);
 #endif
@@ -777,7 +775,7 @@ long metaBigFiftyCount(struct metaBig *mb, char *chrom, unsigned start, unsigned
 {
     if (mb->type == isaBigBed)
 	return bigBedCount(mb, chrom, start, end, TRUE);
-#ifdef USE_BAM
+#ifdef USE_HTSLIB
     if (mb->type == isaBam)
 	errAbort("-fifty option not possible with bams right now");
 #endif

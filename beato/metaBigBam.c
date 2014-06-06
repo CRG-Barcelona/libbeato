@@ -180,7 +180,7 @@ static int bamAddCount(const bam1_t *bam, void *data)
 	    }
 	}
     }
-    return 0;
+    return 1;
 }
 
 /* from Angie's bamFile.c */
@@ -197,8 +197,12 @@ void bamFetchAlreadyOpen(samFile *samfile, hts_idx_t *idx, bam_hdr_t *header,
     while ((r = bam_itr_next(samfile, iter, b)) >= 0)
     {
 	int ret = addFunc(b, data);
-	if (ret != 0)
-	    warn("problems");
+	if (ret == 0)
+	{
+	    /* here maybe report where reads weren't loaded */
+	    /* char *name = bam_get_qname(b); */
+	    /* warn("problems loading %s", name); */
+	}
     }
     hts_itr_destroy(iter);
     bam_destroy1(b);
@@ -433,7 +437,7 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 	    }
 	}
     }
-    return 0;
+    return 1;
 }
 
 struct bed6 *bamBed6Fetch(struct metaBig *mb, char *chrom, unsigned start, unsigned end, struct lm *lm)
