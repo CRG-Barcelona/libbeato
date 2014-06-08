@@ -99,13 +99,14 @@ struct pairbed
 {
     struct pairbed *next;
     char *chrom;
-    unsigned chromStart;
-    char *name;
-    int score;
-    char strand[2];
     char *mChrom;
+    unsigned chromStart;
+    unsigned chromEnd;
     unsigned mChromStart;
+    unsigned mChromEnd;
+    char strand[2];
     char mstrand[2];
+    char *name;
 };
 
 struct bed6

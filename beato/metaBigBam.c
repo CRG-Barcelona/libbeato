@@ -457,6 +457,44 @@ struct bed6 *bamBed6Fetch(struct metaBig *mb, char *chrom, unsigned start, unsig
     return helper.bedList;
 }
 
+static int mate_endpos(const bam1_t *bam, bam_hdr_t *h)
+/* dissect the MC tag return 0 if it's not there */
+{
+    uint8_t *cig = bam_aux_get(bam, "MC");
+    char *cigar_s, *q;
+    int n_cigar = 0;
+    int i;
+    uint32_t *cigar;
+    if (!cig)
+	return 0;
+    /* needed for parsing I guess... taken from sam_parse1() in sam.c */
+    if (h->cigar_tab == 0) 
+    {
+	h->cigar_tab = (uint8_t*)calloc(128, sizeof(uint8_t));
+	for (i = 0; BAM_CIGAR_STR[i]; ++i)
+	    h->cigar_tab[(int)BAM_CIGAR_STR[i]] = i;
+    }
+    cigar_s = bam_aux2Z(cig);
+    if (*cigar_s == '*')
+	return 0;
+    /* scan the cigar string for each non-digit char... each being an operation */
+    for (q = cigar_s, n_cigar = 0; *q; ++q)
+	if (!isdigit(*q)) 
+	    n_cigar++;
+    AllocArray(cigar, n_cigar*2);
+    for (i = 0, q = cigar_s; i < n_cigar; ++i, ++q) {
+	int op;
+	cigar[i] = strtol(q, &q, 10)<<BAM_CIGAR_SHIFT;
+	op = (uint8_t)*q >= 128? -1 : h->cigar_tab[(int)*q];
+	if (op < 0)
+	    errAbort("unrecognized CIGAR operator");
+	cigar[i] |= op;
+    }
+    int32_t pos = bam->core.mpos + bam_cigar2rlen(n_cigar, cigar);
+    freeMem(cigar);
+    return pos;
+}
+
 static int bamAddPairbed(const bam1_t *bam, void *data)
 /* bam_fetch() calls this on each bam alignment retrieved.  Translate each bam
  * into a bed. */
@@ -487,13 +525,14 @@ static int bamAddPairbed(const bam1_t *bam, void *data)
     pb->name = lmBamGetOriginalName(bam, lm);
     pb->chrom = helper->chrom;
     pb->chromStart = start;
-    pb->score = 1000;
+    pb->chromEnd = bam_endpos(bam);
     pb->strand[0] = strand;
     pb->strand[1] = '\0';
     pb->mstrand[0] = mstrand;
-    pb->mstrand[1] = '\0';    
+    pb->mstrand[1] = '\0';
     pb->mChrom = helper->header->target_name[core->mtid];
     pb->mChromStart = core->mpos;
+    pb->mChromEnd = mate_endpos(bam, helper->header);
     slAddHead(&helper->pbList, pb);
     return 1;
 }
