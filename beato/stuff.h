@@ -5,7 +5,12 @@
 #include "jkweb/basicBed.h"
 #endif
 
+#define LONG_NUMBER 32
+
 /* Misc stuff */
+
+void NAorNumToS(char s[LONG_NUMBER], double d, int decimals);
+/* write NA or a number to a char array */
 
 int doubleCountNA(int size, double *array);
 /* count the number of NAs in an array */

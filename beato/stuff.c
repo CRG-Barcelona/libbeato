@@ -7,6 +7,17 @@
 
 #define NANUM sqrt(-1)
 
+void NAorNumToS(char s[LONG_NUMBER], double d, int decimals)
+/* write NA or a number to a char array */
+{
+    if (isnan(d))
+	safef(s, sizeof(char)*LONG_NUMBER, "NA");
+    else if (decimals > -1)
+	safef(s, sizeof(char)*LONG_NUMBER, "%f", d);
+    else
+	safef(s, sizeof(char)*LONG_NUMBER, "%0.*f", decimals, d);
+}
+
 static int doubleWithNACmp(const void *va, const void *vb)
 /* Compare function to sort array of doubles. */
 {
