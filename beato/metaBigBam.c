@@ -331,6 +331,7 @@ static void metaBigAddBamFlagCounts(struct metaBig *mb, const bam1_core_t *core)
     }
 }
 
+
 static int bamAddBed6(const bam1_t *bam, void *data)
 /* bam_fetch() calls this on each bam alignment retrieved.  Translate each bam
  * into a bed. */
@@ -343,6 +344,7 @@ static int bamAddBed6(const bam1_t *bam, void *data)
     const bam1_core_t *core = &bam->core;
     /* first find out if we're to skip this read because there's a strand choice */
     /* in the options */
+    unsigned score = 0;
     char strand = '+';
     /* don't consider if filtered */
     if (filterBam(mb, bam, core))
@@ -355,12 +357,16 @@ static int bamAddBed6(const bam1_t *bam, void *data)
     {
 	if ((mb->strand != 0) && (mb->strand != strand))
 	    return 0;
+	score |= BED6_SE;
 	start = core->pos;
 	/* do shifts, extensions */
 	if (strand == '+')
 	{
 	    if (mb->length > 0)
+	    {
 		end = start + mb->length;
+		score |= BED6_EXTENDED;
+	    }
 	    else if (core->isize > 0)
 		end = start + core->isize;
 	    else 
@@ -370,7 +376,10 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 	{
 	    end = bam_endpos(bam);
 	    if (mb->length > 0)
+	    {
 		start = end - mb->length;
+		score |= BED6_EXTENDED;
+	    }
 	    else if (core->isize > 0)
 		start = end - core->isize;
 	}
@@ -391,7 +400,7 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 	bed->chrom = helper->chrom;
 	bed->chromStart = start;
 	bed->chromEnd = end;
-	bed->score = 1000;
+	bed->score = score;
 	bed->strand[0] = strand;
 	bed->strand[1] = '\0';
 	slAddHead(&helper->bedList, bed);
@@ -401,6 +410,7 @@ static int bamAddBed6(const bam1_t *bam, void *data)
     {
 	if (core->flag & BAM_FPROPER_PAIR)
 	{
+	    score |= BED6_PE;
 	    /* only take one of the paired reads.  the other will be skipped */
 	    if ((int)core->isize > 0)
 	    {
@@ -428,10 +438,14 @@ static int bamAddBed6(const bam1_t *bam, void *data)
 		bed->chrom = helper->chrom;
 		bed->chromStart = start;
 		bed->chromEnd = end;
-		bed->score = 1000;
 		bed->strand[0] = '+';
-		if (mb->strandedPe && (core->flag & BAM_FREAD2))
-		    bed->strand[0] = '-';
+		if (mb->strandedPe)
+		{
+		    score |= BED6_DIRECTIONAL;
+		    if (core->flag & BAM_FREAD2)
+			bed->strand[0] = '-';
+		}
+		bed->score = score;
 		bed->strand[1] = '\0';
 		slAddHead(&helper->bedList, bed);
 	    }
@@ -470,7 +484,7 @@ static int mate_endpos(const bam1_t *bam, bam_hdr_t *h)
     /* needed for parsing I guess... taken from sam_parse1() in sam.c */
     if (h->cigar_tab == 0) 
     {
-	h->cigar_tab = (uint8_t*)calloc(128, sizeof(uint8_t));
+	h->cigar_tab = (int8_t*)calloc(128, sizeof(int8_t));
 	for (i = 0; BAM_CIGAR_STR[i]; ++i)
 	    h->cigar_tab[(int)BAM_CIGAR_STR[i]] = i;
     }

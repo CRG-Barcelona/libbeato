@@ -849,7 +849,7 @@ struct middles *beds_to_middles(struct bed6 *bedList)
     return mids;
 }
 
-static struct starts *beds_to_starts(struct bed6 *bedList, boolean both_ends)
+static struct starts *beds_to_starts(struct bed6 *bedList)
 /* convert bigBedIntervals to minimal information needed for phasing */
 {
     struct bed6 *cur;
@@ -867,7 +867,7 @@ static struct starts *beds_to_starts(struct bed6 *bedList, boolean both_ends)
     AllocArray(neg_starts, total_size);
     for (cur = bedList; cur != NULL; cur = cur->next)
     {
-	if (both_ends)
+	if (cur->score & BED6_PE)
 	{
 	    pos_starts[num_ps++] = cur->chromStart;
 	    neg_starts[num_ns++] = cur->chromEnd;	    
@@ -877,10 +877,8 @@ static struct starts *beds_to_starts(struct bed6 *bedList, boolean both_ends)
 	else
 	    neg_starts[num_ns++] = cur->chromEnd;
     }
-    if (both_ends)
-	qsort(pos_starts, num_ps, sizeof(int), pos_compare);
-    else
-	qsort(neg_starts, num_ns, sizeof(int), pos_compare);
+    qsort(pos_starts, num_ps, sizeof(int), pos_compare);
+    qsort(neg_starts, num_ns, sizeof(int), pos_compare);
     /* find the number of unique starts */
     AllocVar(starts);
     starts->num_pos_starts = unique_nums(pos_starts, num_ps);
@@ -910,18 +908,7 @@ struct starts *metaBig_get_starts(struct metaBig *mb, char *chrom, unsigned star
     struct starts *starts = NULL;
     struct lm *lm = lmInit(0);
     struct bed6 *bedList = metaBigBed6Fetch(mb, chrom, start, end, lm);
-    starts = beds_to_starts(bedList, FALSE);
-    lmCleanup(&lm);
-    return starts;
-}
-
-struct starts *metaBig_get_starts_both_ends(struct metaBig *mb, char *chrom, unsigned start, unsigned end)
-/* return starts struct used with the phasogram/distogram programs */
-{
-    struct starts *starts = NULL;
-    struct lm *lm = lmInit(0);
-    struct bed6 *bedList = metaBigBed6Fetch(mb, chrom, start, end, lm);
-    starts = beds_to_starts(bedList, TRUE);
+    starts = beds_to_starts(bedList);
     lmCleanup(&lm);
     return starts;
 }

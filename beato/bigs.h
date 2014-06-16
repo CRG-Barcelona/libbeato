@@ -168,9 +168,6 @@ void perBaseWigOutputNASkip(struct perBaseWig *pbwList, FILE *output, enum wigOu
 struct starts *metaBig_get_starts(struct metaBig *mb, char *chrom, unsigned start, unsigned end);
 /* return starts struct used with the phasogram/distogram programs */
 
-struct starts *metaBig_get_starts_both_ends(struct metaBig *mb, char *chrom, unsigned start, unsigned end);
-/* return starts struct for pair-end to collect both ends */
-
 struct middles *beds_to_middles(struct bed6 *bedList);
 /* minimal information for stacking middles */
 

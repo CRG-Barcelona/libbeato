@@ -122,6 +122,18 @@ struct bed6
     char strand[2];  /* + or -.  */    
 };
 
+/* Different meanings of scores */
+/* Score meanings: 0 and 1000 = unused */
+/*   bit 1 - single-end */
+/*   bit 2 - paired-end */
+/*   bit 3 - extended */
+/*   bit 4 - directional */
+
+#define BED6_SE 1
+#define BED6_PE 2
+#define BED6_EXTENDED 4
+#define BED6_DIRECTIONAL 8
+
 struct metaBigBed6Helper
 /* Helper structure to help get sam alignments out of a BAM file */
     {
