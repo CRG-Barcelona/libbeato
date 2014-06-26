@@ -175,6 +175,10 @@ enum metaBigFileType isBigWigOrBed(char *filename);
 enum metaBigFileType sniffBigFile(char *filename);
 /* try to figure out what type of big file it is. */
 
+struct metaBig *metaBigOpenWithTmpDir(char *fileOrUrlwSections, char *tmp_dir, char *sectionsBed);
+/* load a file or URL with or without sectioning */
+/* if it's a bam, load the index. */
+
 struct metaBig *metaBigOpen(char *fileOrUrlwSections, char *sectionsBed);
 /* load a file or URL with or without sectioning */
 /* if it's a bam, load the index. */

@@ -9,51 +9,6 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.  This file is offered as-is,
 without warranty of any kind.
 
-Before Installing
-=================
-   You need to install htslib and samtools first.  At the moment, github
-is the recommended way to install:
-
-htslib
-------
-git clone https://github.com/samtools/htslib.git
-cd htslib/
-make
-make install 
-
-** if you don't have root privledges, then edit the 'Makefile' by changing
-   the "prefix = /usr/local" to "prefix = ${HOME}"
-
-samtools
---------
-cd ../
-
-(samtools seems to expect the htslib source in the parent directory)
-
-git clone https://github.com/samtools/samtools.git
-cd samtools/
-make
-
-sudo cp *.h /usr/loca/include 
-sudo cp libbam.a /usr/local/lib/
-
-(or if you don't have root):
-
-cp *.h ${HOME}/include
-cp libbam.a ${HOME}/lib
-
-
-COMPILING
-=========
-./configure
-
-(or if you followed the earlier steps to installing libbam and htslib locally):
-
-./configure --prefix=$HOME LDFLAGS=-L${HOME}/lib CFLAGS=-I${HOME}/include
-make
-make install
-
-
 Basic Installation
 ==================
 

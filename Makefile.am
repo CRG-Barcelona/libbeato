@@ -1,6 +1,7 @@
 SUBDIRS = jkweb beato
 
 nobase_include_HEADERS = \
+	beato/bbiAugment.h \
 	beato/bigs.h \
 	beato/cluster.h \
 	beato/extrema.h \

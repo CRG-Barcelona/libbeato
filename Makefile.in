@@ -328,6 +328,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = jkweb beato
 nobase_include_HEADERS = \
+	beato/bbiAugment.h \
 	beato/bigs.h \
 	beato/cluster.h \
 	beato/extrema.h \

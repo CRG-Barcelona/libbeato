@@ -16,6 +16,7 @@
 #include <jkweb/rangeTree.h>
 #include <beato/metaBig.h>
 #include <beato/bigs.h>
+#include <beato/bbiAugment.h>
 
 #ifdef USE_HTSLIB
 #include <htslib/sam.h>
@@ -587,7 +588,7 @@ static struct bed *regionsLoad(char *sectionsBed)
 
 /************** the "public" functions from the .h  ***************/
 
-struct metaBig *metaBigOpen(char *fileOrUrlwSections, char *sectionsBed)
+struct metaBig *metaBigOpenWithTmpDir(char *fileOrUrlwSections, char *cacheDir, char *sectionsBed)
 /* load a file or URL with or without sectioning */
 /* if it's a bam, load the index. */
 {
@@ -625,7 +626,7 @@ struct metaBig *metaBigOpen(char *fileOrUrlwSections, char *sectionsBed)
 #endif
     else if (mb->type == isaBigWig)
     {
-	mb->big.bbi = bigWigFileOpen(mb->fileName);
+	mb->big.bbi = bigWigFileOpenWithDir(mb->fileName, cacheDir);
 	mb->chromSizeHash = bbiChromSizes(mb->big.bbi);	
     }
     else 
@@ -699,6 +700,13 @@ void metaBigSetPositionalOptions(struct metaBig *mb, int length, int shift, char
     mb->length = length;
     mb->shift = shift;
     mb->strand = strand;
+}
+
+struct metaBig *metaBigOpen(char *fileOrUrlwSections, char *sectionsBed)
+/* load a file or URL with or without sectioning */
+/* if it's a bam, load the index. */
+{
+    return metaBigOpenWithTmpDir(fileOrUrlwSections, NULL, sectionsBed);
 }
 
 void metaBigSetNameOption(struct metaBig *mb, enum metaBigNameType nameType)

@@ -127,10 +127,10 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libbeato_a_AR = $(AR) $(ARFLAGS)
 libbeato_a_LIBADD =
-am_libbeato_a_OBJECTS = bigs.$(OBJEXT) cluster.$(OBJEXT) \
-	extrema.$(OBJEXT) fastq_stuff.$(OBJEXT) favs.$(OBJEXT) \
-	metaBig.$(OBJEXT) metaBigBam.$(OBJEXT) random_coord.$(OBJEXT) \
-	sax.$(OBJEXT) stuff.$(OBJEXT)
+am_libbeato_a_OBJECTS = bbiAugment.$(OBJEXT) bigs.$(OBJEXT) \
+	cluster.$(OBJEXT) extrema.$(OBJEXT) fastq_stuff.$(OBJEXT) \
+	favs.$(OBJEXT) metaBig.$(OBJEXT) metaBigBam.$(OBJEXT) \
+	random_coord.$(OBJEXT) sax.$(OBJEXT) stuff.$(OBJEXT)
 libbeato_a_OBJECTS = $(am_libbeato_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -293,6 +293,8 @@ top_srcdir = @top_srcdir@
 AM_CFLAGS = @MACHTYPE_WARN@ -fno-strict-aliasing
 lib_LIBRARIES = libbeato.a
 libbeato_a_SOURCES = \
+	bbiAugment.c \
+	bbiAugment.h \
 	bigs.c \
 	bigs.h \
 	cluster.c \
@@ -392,6 +394,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bbiAugment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bigs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cluster.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extrema.Po@am__quote@

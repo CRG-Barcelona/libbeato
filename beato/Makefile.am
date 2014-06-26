@@ -3,6 +3,8 @@ AM_CFLAGS = @MACHTYPE_WARN@ -fno-strict-aliasing
 lib_LIBRARIES = libbeato.a
 
 libbeato_a_SOURCES = \
+	bbiAugment.c \
+	bbiAugment.h \
 	bigs.c \
 	bigs.h \
 	cluster.c \
