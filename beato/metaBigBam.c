@@ -569,7 +569,7 @@ struct pairbed *bamPairbedFetch(struct metaBig *mb, char *chrom, unsigned start,
     return helper.pbList;
 }
 
-static void binary_format(char *s, int num)
+static void binary_reformatt(char *s, int num)
 /* used but metaBigPrintFlagCounts to convert a number into a specific-length */
 /* binary number. */
 {
@@ -612,7 +612,7 @@ void metaBigPrintFlagCounts(struct metaBig *mb, char *file, boolean clear)
 	    mb->bc.bit_count[i] = 0;
     for (i = 0; i < 2048; i++)
     {
-	binary_format(bin_num, i);
+	binary_reformatt(bin_num, i);
 	if (mb->bc.type_count[i] > 0)
     fprintf(output, " # %4d   %s         %'15ld\n", i, bin_num, mb->bc.type_count[i]);
 	if (clear)
