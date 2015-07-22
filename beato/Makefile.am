@@ -1,6 +1,7 @@
 AM_CFLAGS = @MACHTYPE_WARN@ -fno-strict-aliasing
 
 lib_LIBRARIES = libbeato.a
+libbeato_a_CFLAGS = -I$(top_srcdir)/libbeato-submod
 
 libbeato_a_SOURCES = \
 	bbiAugment.c \
