@@ -1,4 +1,4 @@
-AM_CFLAGS = @MACHTYPE_WARN@ -fno-strict-aliasing
+AM_CFLAGS = -I$(top_srcdir) @MACHTYPE_WARN@ -fno-strict-aliasing
 
 lib_LIBRARIES = libbeato.a
 
