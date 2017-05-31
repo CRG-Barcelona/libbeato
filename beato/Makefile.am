@@ -1,8 +1,8 @@
 AM_CFLAGS = -I$(top_srcdir) @MACHTYPE_WARN@ -fno-strict-aliasing
 
-lib_LIBRARIES = libbeato.a
+lib_LTLIBRARIES = libbeato.la
 
-libbeato_a_SOURCES = \
+libbeato_la_SOURCES = \
 	bbiAugment.c \
 	bbiAugment.h \
 	bigs.c \

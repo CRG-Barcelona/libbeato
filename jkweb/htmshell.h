@@ -14,6 +14,9 @@
  * This file is copyright 2002 Jim Kent, but license is hereby
  * granted for all use - public, private or commercial. */
 
+#ifndef HTMLSHELL_H
+#define HTMLSHELL_H
+
 void htmlSetCookie(char* name, char* value, char* expires, char* path, char* domain, boolean isSecure);
 /* create a cookie with the given stats */
 
@@ -118,7 +121,7 @@ void htmlBadVar(char *varName);
 void htmlImage(char *fileName, int width, int height);
 /* Display centered image file. */
 
-jmp_buf htmlRecover;  /* Error recovery jump. Exposed for cart's use. */
+/* jmp_buf htmlRecover;  Error recovery jump. Exposed for cart's use. */
 
 void htmlVaWarn(char *format, va_list args);
 /* Write an error message.  (Generally you just call warn() or errAbort().
@@ -178,3 +181,5 @@ void htmlIncludeWebFile(char *file);
 
 /* Include an HTML file in a CGI */
 void htmlIncludeFile(char *path);
+
+#endif
