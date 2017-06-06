@@ -1,4 +1,3 @@
-ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = jkweb beato
 
 nobase_include_HEADERS = \
