@@ -1,0 +1,7 @@
+pipeline:
+  build:
+    image: buildpack-deps:jessie
+    commands:
+      - ./configure
+      - make
+      - make install
