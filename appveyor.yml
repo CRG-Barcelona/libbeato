@@ -1,8 +1,22 @@
-os:
-  - Visual Studio 2015
+environment:
+  matrix:
+    - arch: "x86-64"
+      tools: "mingw"
+    - arch: "x86-64"
+      tools: "cygwin"
 
-platform:
-  - x64
+install:
+  - ps: if($env:tools -eq 'mingw')
+        {
+          $env:c_comp = 'gcc';
+        }
+        elseif($env:tools -eq 'cygwin')
+        {
+          $env:c_comp = 'gcc';
+        }
 
 build_script:
-  - sh -c "./configure && make"
+  - IF [%tools%]==[mingw] set PATH=C:\mingw64\bin;%PATH%
+  - IF [%tools%]==[mingw] sh -c "%c_comp% -v && ./configure CC=%c_comp% && make" 
+  - IF [%tools%]==[cygwin] set PATH=C:\cygwin64\bin;%PATH%
+  - IF [%tools%]==[cygwin] sh -c "%c_comp% -v && ./configure CC=%c_comp% && make"
