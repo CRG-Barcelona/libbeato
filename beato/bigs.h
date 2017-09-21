@@ -1,6 +1,10 @@
 #ifndef BIGS_H
 #define BIGS_H
 
+#ifndef COMMON_H
+#include "jkweb/common.h"
+#endif
+
 #ifndef HASH_H
 #include "jkweb/hash.h"
 #endif
