@@ -8,6 +8,8 @@
 #include "config.h"
 #endif
 
+#ifdef USE_PNG
+
 #include "png.h"   // MUST come before common.h, due to setjmp checking  in pngconf.h 
 #include "common.h"
 #include "memgfx.h"
@@ -117,3 +119,5 @@ if (!mgSaveToPng(pngFile, mg, useTransparency))
 if (fclose(pngFile) != 0)
     errnoAbort("fclose failed");
 }
+
+#endif

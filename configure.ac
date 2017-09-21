@@ -91,20 +91,10 @@ if test "x${has_zlib}" != xyes; then
    See the INSTALL for examples.
    ---------------------------------------------])
 fi
-AC_CHECK_HEADER([png.h], AC_SEARCH_LIBS([png_read_png], [png], [has_png=yes], [has_png=no]), [has_png=no],[])
-if test "x${has_png}" != xyes; then
-   AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find png.h or libpng for
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
+AC_CHECK_HEADERS([png.h],[has_png=yes],[has_png=no],[])
 if test "x${has_png}" = xyes; then
-   AC_DEFINE([USE_PNG],[1],[Turn on PNG support in pngwrite.c])
+   AC_DEFINE([USE_PNG],[1],[Turn on PNG support.])
 fi
-
 AC_CHECK_HEADERS([openssl/ssl.h openssl/err.h],[has_ssl=yes],[has_ssl=no],[])
 if test "x${has_ssl}" = xyes; then
    AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])

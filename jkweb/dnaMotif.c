@@ -524,6 +524,8 @@ void dnaMotifToLogoPs(struct dnaMotif *motif, double widthPerBase, double height
 dnaMotifToLogoPs2(motif, widthPerBase, height, 0.0, fileName);
 }
 
+#ifdef USE_PNG
+
 void dnaMotifToLogoPng(
 	struct dnaMotif *motif,	/* Motif to draw. */
 	double widthPerBase, 	/* Width of each base. */
@@ -562,6 +564,8 @@ sysRet = system(dy->string);
 
 remove(psName);
 }
+
+#endif
 
 void dnaMotifToLogoPsW(struct dnaMotif *motif, double widthPerBase, double width, double height, char *fileName)
 /* Write logo corresponding to motif to postScript file. */

@@ -5,6 +5,8 @@
 #include "config.h"
 #endif
 
+#ifdef USE_PNG
+
 #include "common.h"
 #include "memgfx.h"
 #include "vGfx.h"
@@ -67,3 +69,4 @@ vg->data = png;
 return vg;
 }
 
+#endif

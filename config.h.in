@@ -78,6 +78,9 @@
 /* Define to 1 if you have the <openssl/ssl.h> header file. */
 #undef HAVE_OPENSSL_SSL_H
 
+/* Define to 1 if you have the <png.h> header file. */
+#undef HAVE_PNG_H
+
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
 
@@ -255,7 +258,7 @@
 /* Turn on htslib support */
 #undef USE_HTSLIB
 
-/* Turn on PNG support in pngwrite.c */
+/* Turn on PNG support. */
 #undef USE_PNG
 
 /* Turn on SSL support in https.c */
