@@ -4,12 +4,13 @@
 AC_INIT([libbeato],[1.0])
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE
+LT_INIT([shared,static])
+AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_SRCDIR([beato/metaBig.c])
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_RANLIB
 AC_LANG([C])
 AM_PROG_CC_C_O
 AM_MAINTAINER_MODE([disable])

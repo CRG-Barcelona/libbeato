@@ -2,8 +2,8 @@
 
 AM_CFLAGS = @MACHTYPE_WARN@ -fno-strict-aliasing
 
-lib_LIBRARIES = libjkweb.a
-libjkweb_a_SOURCES = \
+lib_LTLIBRARIES = libjkweb.la
+libjkweb_la_SOURCES = \
 	ace.h \
 	aliType.c \
 	aliType.h \
