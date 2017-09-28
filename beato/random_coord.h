@@ -4,19 +4,19 @@
 #define RANDOM_COORD_H
 
 #ifndef HASH_H
-#include <jkweb/hash.h>
+#include <kent/hash.h>
 #endif
 
 #ifndef BASICBED_H
-#include <jkweb/basicBed.h>
+#include <kent/basicBed.h>
 #endif
 
 #ifndef RANGETREE_H
-#include <jkweb/rangeTree.h>
+#include <kent/rangeTree.h>
 #endif
 
 #ifndef METABIG_H
-#include <beato/metaBig.h>
+#include "metaBig.h"
 #endif
 
 typedef struct { } cat_chrom;

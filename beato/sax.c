@@ -4,10 +4,10 @@
 
 #include <float.h>
 #include <math.h>
-#include <jkweb/common.h>
-#include <jkweb/linefile.h>
-#include <jkweb/hash.h>
-#include <beato/sax.h>
+#include <kent/common.h>
+#include <kent/linefile.h>
+#include <kent/hash.h>
+#include "sax.h"
 
 static double *sax_make_cut_points_array(int alphabet_size)
 /* Incredibly pathetic function to make the all-important array. */

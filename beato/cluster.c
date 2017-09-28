@@ -50,20 +50,20 @@
  ** Last compiled under Linux with gcc-3
  */
 
-#include <jkweb/common.h>
-#include <jkweb/obscure.h>
+#include <kent/common.h>
+#include <kent/obscure.h>
 #include <assert.h>
 #include <float.h>
 #include <math.h>
-#include <jkweb/linefile.h>
-#include <jkweb/hash.h>
-#include <jkweb/options.h>
-#include <jkweb/sqlNum.h>
-#include <jkweb/basicBed.h>
-#include <jkweb/bigWig.h>
-#include <beato/metaBig.h>
-#include <beato/bigs.h>
-#include <beato/cluster.h>
+#include <kent/linefile.h>
+#include <kent/hash.h>
+#include <kent/options.h>
+#include <kent/sqlNum.h>
+#include <kent/basicBed.h>
+#include <kent/bigWig.h>
+#include "metaBig.h"
+#include "bigs.h"
+#include "cluster.h"
 
 static int perBaseWigJustLabelCmp(const void *a, const void *b)
 /* for sorting after clustering */

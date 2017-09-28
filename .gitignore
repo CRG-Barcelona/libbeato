@@ -9,3 +9,7 @@ stamp-h1
 Makefile
 autom4te.cache
 .vscode
+beato/.libs
+*/*.lo
+*/*.la
+*/*.lai

@@ -48,62 +48,73 @@ case $host in
 esac
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h math.h netinet/in.h pthread.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h zlib.h])
+AC_CHECK_HEADERS([assert.h float.h limits.h math.h stdio.h],[],[AC_MSG_ERROR([
+   ---------------------------------------------
+   One of the basic headers is missing.  Check your 
+   C compiler installation.
+   ---------------------------------------------])])
 
-# REQUIRED headers, with some additional checks for libraries
-
-AC_SEARCH_LIBS([pthread_create], [pthread], [has_pthread=yes], [has_pthread=no])
-if test "x${has_pthread}" != xyes; then
-   AC_MSG_ERROR([
+AC_SEARCH_LIBS([pthread_create], [pthread], [], [AC_MSG_ERROR([
    ---------------------------------------------
    Unable to find libpthread required for compiling
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_SEARCH_LIBS([pow], [m], [has_math=yes], [has_math=no])
-if test "x${has_math}" != xyes; then
-   AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find libm (math) required for compiling
-   bambed. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_SEARCH_LIBS([pow], [m], [has_math=yes], [has_math=no])
-if test "x${has_math}" != xyes; then
-   AC_MSG_ERROR([
-   ---------------------------------------------
-   Unable to find libm (math) required for compiling
-   bambed. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_SEARCH_LIBS([zlibVersion], [z], [has_zlib=yes], [has_zlib=no])
-if test "x${has_zlib}" != xyes; then
-   AC_MSG_ERROR([
+   libkent. Install this and run ./configure
+   with the appropriate LDFLAGS. See the INSTALL
+   for examples.
+   ---------------------------------------------])])
+
+AC_SEARCH_LIBS([zlibVersion], [z], [], [AC_MSG_ERROR([
    ---------------------------------------------
    Unable to find zlib required for compiling
-   bambed. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------])
-fi
-AC_CHECK_HEADERS([png.h],[has_png=yes],[has_png=no],[])
-if test "x${has_png}" = xyes; then
-   AC_DEFINE([USE_PNG],[1],[Turn on PNG support.])
-fi
-AC_CHECK_HEADERS([openssl/ssl.h openssl/err.h],[has_ssl=yes],[has_ssl=no],[])
+   libkent. Install this and run ./configure with
+   the appropriate LDFLAGS. See the INSTALL for 
+   examples.
+   ---------------------------------------------])])
+
+AC_CHECK_HEADERS([png.h],[
+    AC_SEARCH_LIBS([png_init_io],[png],[
+        AC_DEFINE([USE_PNG],[1],[Turn on PNG support.])
+    ])
+])
+
+has_ssl=yes
+AC_SEARCH_LIBS([SHA1], [crypto], [], [has_ssl=no])
+AC_SEARCH_LIBS([SSL_connect], [ssl], [], [has_ssl=no])
 if test "x${has_ssl}" = xyes; then
-   AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])
+    AC_DEFINE([USE_SSL],[1],[Turn on SSL support in https.c])
+else
+    AC_MSG_ERROR([
+    ---------------------------------------------
+    Unable to find libssl/libcrypto required for 
+    compiling libbeato. Install this and run
+    ./configure with the appropriate LDFLAGS. See
+    the INSTALL for examples.
+    ---------------------------------------------])
 fi
-AC_SEARCH_LIBS([hts_version],[hts],[has_htslib=yes],[has_htslib=no])
-if test "x${has_htslib}" = xyes; then
-   AC_DEFINE([USE_HTSLIB],[1],[Turn on htslib support])
-fi
+
+AC_CHECK_HEADERS([kent/common.h],[
+    has_kent=yes
+    AC_SEARCH_LIBS([slSort], [kent], [], [has_kent=no])
+    AC_SEARCH_LIBS([bam_hdr_init], [jkhts], [], [has_kent=no])
+    if test "x${has_kent}" = xno; then
+       AC_MSG_ERROR([
+        ---------------------------------------------
+        Unable to find libkent/libjkhts required for 
+        compiling libbeato. Install this and run ./configure
+        with the appropriate LDFLAGS. See the INSTALL
+        for examples.
+        ---------------------------------------------])
+    fi],[AC_MSG_ERROR([
+        ---------------------------------------------
+        Unable to find libkent headers required for compiling
+        libbeato. Install this and run ./configure with 
+        the appropriate CFLAGS. See the INSTALL for
+        examples.
+        ---------------------------------------------])])
+
+# Integrated htslib-specific defines
+AC_DEFINE([USE_HTSLIB],[1],[Integrated UCSC htslib option])
+AC_DEFINE([UCSC_CRAM],[1],[Integrated UCSC htslib option])
+AC_DEFINE([KNETFILE_HOOKS],[1],[Integrated UCSC htslib option])
 
 # Large file support
 AC_SYS_LARGEFILE
@@ -132,6 +143,6 @@ AC_FUNC_MMAP
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero dup2 floor getcwd gettimeofday memmove memset mkdir munmap pow putenv regcomp rint select setenv socket sqrt strcasecmp strchr strcspn strdup strerror strrchr strspn strstr strtol tzset uname utime])
 
-AC_CONFIG_FILES([Makefile beato/Makefile jkweb/Makefile])
+AC_CONFIG_FILES([Makefile beato/Makefile])
 
 AC_OUTPUT

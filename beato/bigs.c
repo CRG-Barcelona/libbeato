@@ -2,20 +2,20 @@
 #include "config.h"
 #endif
 
-#include <jkweb/common.h>
-#include <jkweb/obscure.h>
-#include <jkweb/hash.h>
-#include <jkweb/genomeRangeTree.h>
-#include <jkweb/linefile.h>
-#include <jkweb/localmem.h>
-#include <jkweb/sqlNum.h>
-#include <jkweb/sig.h>
-#include <jkweb/dystring.h>
-#include <jkweb/basicBed.h>
-#include <jkweb/bigBed.h>
-#include <jkweb/bigWig.h>
-#include <jkweb/hmmstats.h>
-#include <beato/bigs.h>
+#include <kent/common.h>
+#include <kent/obscure.h>
+#include <kent/hash.h>
+#include <kent/genomeRangeTree.h>
+#include <kent/linefile.h>
+#include <kent/localmem.h>
+#include <kent/sqlNum.h>
+#include <kent/sig.h>
+#include <kent/dystring.h>
+#include <kent/basicBed.h>
+#include <kent/bigBed.h>
+#include <kent/bigWig.h>
+#include <kent/hmmstats.h>
+#include "bigs.h"
 
 #include <limits.h>
 #include <math.h>

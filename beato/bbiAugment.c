@@ -1,15 +1,15 @@
-#include <jkweb/common.h>
-#include <jkweb/linefile.h>
-#include <jkweb/hash.h>
-#include <jkweb/obscure.h>
-#include <jkweb/zlibFace.h>
-#include <jkweb/bPlusTree.h>
-#include <jkweb/hmmstats.h>
-#include <jkweb/cirTree.h>
-#include <jkweb/udc.h>
-#include <jkweb/bbiFile.h>
-#include <jkweb/sig.h>
-#include <beato/bbiAugment.h>
+#include <kent/common.h>
+#include <kent/linefile.h>
+#include <kent/hash.h>
+#include <kent/obscure.h>
+#include <kent/zlibFace.h>
+#include <kent/bPlusTree.h>
+#include <kent/hmmstats.h>
+#include <kent/cirTree.h>
+#include <kent/udc.h>
+#include <kent/bbiFile.h>
+#include <kent/sig.h>
+#include "bbiAugment.h"
 
 struct bbiFile *bbiFileOpenWithDir(char *fileName, bits32 sig, char *typeName, char *udcDir)
 /* same (mostly) as bbiFileOpen in bbiFile.c, but allows setting the temporary dir */

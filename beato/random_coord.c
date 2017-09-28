@@ -4,10 +4,10 @@
 #include "config.h"
 #endif
 
-#include <jkweb/common.h>
-#include <jkweb/obscure.h>
-#include <beato/random_coord.h>
-#include <beato/bigs.h>
+#include <kent/common.h>
+#include <kent/obscure.h>
+#include "random_coord.h"
+#include "bigs.h"
 
 #define NANUM sqrt(-1)
 

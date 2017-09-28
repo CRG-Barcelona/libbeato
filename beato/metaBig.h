@@ -16,8 +16,8 @@
 #include "jkweb/bigBed.h"
 #endif
 
-#ifdef USE_HTSLIB
-#include <htslib/sam.h>
+#ifndef HTSLIB_SAM_H
+#include <kent/htslib/sam.h>
 #endif
 
 enum metaBigFileType

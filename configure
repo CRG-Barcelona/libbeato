@@ -738,7 +738,6 @@ infodir
 docdir
 oldincludedir
 includedir
-runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -823,7 +822,6 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
-runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1076,15 +1074,6 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
-  -runstatedir | --runstatedir | --runstatedi | --runstated \
-  | --runstate | --runstat | --runsta | --runst | --runs \
-  | --run | --ru | --r)
-    ac_prev=runstatedir ;;
-  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
-  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
-  | --run=* | --ru=* | --r=*)
-    runstatedir=$ac_optarg ;;
-
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1222,7 +1211,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir runstatedir
+		libdir localedir mandir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1375,7 +1364,6 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
-  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -13010,7 +12998,7 @@ case $host in
 esac
 
 # Checks for header files.
-for ac_header in arpa/inet.h fcntl.h float.h limits.h netdb.h math.h netinet/in.h pthread.h stdlib.h string.h strings.h sys/file.h sys/socket.h sys/statvfs.h sys/time.h syslog.h termios.h unistd.h utime.h zlib.h
+for ac_header in assert.h float.h limits.h math.h stdio.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -13019,12 +13007,16 @@ if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
 
+else
+  as_fn_error $? "
+   ---------------------------------------------
+   One of the basic headers is missing.  Check your
+   C compiler installation.
+   ---------------------------------------------" "$LINENO" 5
 fi
 
 done
 
-
-# REQUIRED headers, with some additional checks for libraries
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pthread_create" >&5
 $as_echo_n "checking for library containing pthread_create... " >&6; }
@@ -13079,154 +13071,18 @@ $as_echo "$ac_cv_search_pthread_create" >&6; }
 ac_res=$ac_cv_search_pthread_create
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  has_pthread=yes
-else
-  has_pthread=no
-fi
 
-if test "x${has_pthread}" != xyes; then
-   as_fn_error $? "
+else
+  as_fn_error $? "
    ---------------------------------------------
    Unable to find libpthread required for compiling
-   libjkweb.a. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
+   libkent. Install this and run ./configure
+   with the appropriate LDFLAGS. See the INSTALL
+   for examples.
    ---------------------------------------------" "$LINENO" 5
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pow" >&5
-$as_echo_n "checking for library containing pow... " >&6; }
-if ${ac_cv_search_pow+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char pow ();
-int
-main ()
-{
-return pow ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' m; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_pow=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_pow+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_pow+:} false; then :
 
-else
-  ac_cv_search_pow=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_pow" >&5
-$as_echo "$ac_cv_search_pow" >&6; }
-ac_res=$ac_cv_search_pow
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  has_math=yes
-else
-  has_math=no
-fi
-
-if test "x${has_math}" != xyes; then
-   as_fn_error $? "
-   ---------------------------------------------
-   Unable to find libm (math) required for compiling
-   bambed. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------" "$LINENO" 5
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pow" >&5
-$as_echo_n "checking for library containing pow... " >&6; }
-if ${ac_cv_search_pow+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char pow ();
-int
-main ()
-{
-return pow ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' m; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_pow=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_pow+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_pow+:} false; then :
-
-else
-  ac_cv_search_pow=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_pow" >&5
-$as_echo "$ac_cv_search_pow" >&6; }
-ac_res=$ac_cv_search_pow
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  has_math=yes
-else
-  has_math=no
-fi
-
-if test "x${has_math}" != xyes; then
-   as_fn_error $? "
-   ---------------------------------------------
-   Unable to find libm (math) required for compiling
-   bambed. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
-   ---------------------------------------------" "$LINENO" 5
-fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing zlibVersion" >&5
 $as_echo_n "checking for library containing zlibVersion... " >&6; }
 if ${ac_cv_search_zlibVersion+:} false; then :
@@ -13280,20 +13136,18 @@ $as_echo "$ac_cv_search_zlibVersion" >&6; }
 ac_res=$ac_cv_search_zlibVersion
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  has_zlib=yes
-else
-  has_zlib=no
-fi
 
-if test "x${has_zlib}" != xyes; then
-   as_fn_error $? "
+else
+  as_fn_error $? "
    ---------------------------------------------
    Unable to find zlib required for compiling
-   bambed. Install this and run ./configure
-   with the appropriate LDFLAGS/CFLAGS/etc.
-   See the INSTALL for examples.
+   libkent. Install this and run ./configure with
+   the appropriate LDFLAGS. See the INSTALL for
+   examples.
    ---------------------------------------------" "$LINENO" 5
 fi
+
+
 for ac_header in png.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
@@ -13301,41 +13155,10 @@ if test "x$ac_cv_header_png_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_PNG_H 1
 _ACEOF
- has_png=yes
-else
-  has_png=no
-fi
 
-done
-
-if test "x${has_png}" = xyes; then
-
-$as_echo "#define USE_PNG 1" >>confdefs.h
-
-fi
-for ac_header in openssl/ssl.h openssl/err.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
- has_ssl=yes
-else
-  has_ssl=no
-fi
-
-done
-
-if test "x${has_ssl}" = xyes; then
-
-$as_echo "#define USE_SSL 1" >>confdefs.h
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing hts_version" >&5
-$as_echo_n "checking for library containing hts_version... " >&6; }
-if ${ac_cv_search_hts_version+:} false; then :
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing png_init_io" >&5
+$as_echo_n "checking for library containing png_init_io... " >&6; }
+if ${ac_cv_search_png_init_io+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_func_search_save_LIBS=$LIBS
@@ -13348,16 +13171,16 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char hts_version ();
+char png_init_io ();
 int
 main ()
 {
-return hts_version ();
+return png_init_io ();
   ;
   return 0;
 }
 _ACEOF
-for ac_lib in '' hts; do
+for ac_lib in '' png; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -13365,37 +13188,328 @@ for ac_lib in '' hts; do
     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
   fi
   if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_hts_version=$ac_res
+  ac_cv_search_png_init_io=$ac_res
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext
-  if ${ac_cv_search_hts_version+:} false; then :
+  if ${ac_cv_search_png_init_io+:} false; then :
   break
 fi
 done
-if ${ac_cv_search_hts_version+:} false; then :
+if ${ac_cv_search_png_init_io+:} false; then :
 
 else
-  ac_cv_search_hts_version=no
+  ac_cv_search_png_init_io=no
 fi
 rm conftest.$ac_ext
 LIBS=$ac_func_search_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_hts_version" >&5
-$as_echo "$ac_cv_search_hts_version" >&6; }
-ac_res=$ac_cv_search_hts_version
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_png_init_io" >&5
+$as_echo "$ac_cv_search_png_init_io" >&6; }
+ac_res=$ac_cv_search_png_init_io
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  has_htslib=yes
-else
-  has_htslib=no
+
+
+$as_echo "#define USE_PNG 1" >>confdefs.h
+
+
 fi
 
-if test "x${has_htslib}" = xyes; then
+
+fi
+
+done
+
+
+has_ssl=yes
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SHA1" >&5
+$as_echo_n "checking for library containing SHA1... " >&6; }
+if ${ac_cv_search_SHA1+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SHA1 ();
+int
+main ()
+{
+return SHA1 ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' crypto; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SHA1=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_SHA1+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_SHA1+:} false; then :
+
+else
+  ac_cv_search_SHA1=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SHA1" >&5
+$as_echo "$ac_cv_search_SHA1" >&6; }
+ac_res=$ac_cv_search_SHA1
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+  has_ssl=no
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_connect" >&5
+$as_echo_n "checking for library containing SSL_connect... " >&6; }
+if ${ac_cv_search_SSL_connect+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_connect ();
+int
+main ()
+{
+return SSL_connect ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SSL_connect=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_SSL_connect+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_SSL_connect+:} false; then :
+
+else
+  ac_cv_search_SSL_connect=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SSL_connect" >&5
+$as_echo "$ac_cv_search_SSL_connect" >&6; }
+ac_res=$ac_cv_search_SSL_connect
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+  has_ssl=no
+fi
+
+if test "x${has_ssl}" = xyes; then
+
+$as_echo "#define USE_SSL 1" >>confdefs.h
+
+else
+    as_fn_error $? "
+    ---------------------------------------------
+    Unable to find libssl/libcrypto required for
+    compiling libbeato. Install this and run
+    ./configure with the appropriate LDFLAGS. See
+    the INSTALL for examples.
+    ---------------------------------------------" "$LINENO" 5
+fi
+
+for ac_header in kent/common.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "kent/common.h" "ac_cv_header_kent_common_h" "$ac_includes_default"
+if test "x$ac_cv_header_kent_common_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_KENT_COMMON_H 1
+_ACEOF
+
+    has_kent=yes
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing slSort" >&5
+$as_echo_n "checking for library containing slSort... " >&6; }
+if ${ac_cv_search_slSort+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char slSort ();
+int
+main ()
+{
+return slSort ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' kent; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_slSort=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_slSort+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_slSort+:} false; then :
+
+else
+  ac_cv_search_slSort=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_slSort" >&5
+$as_echo "$ac_cv_search_slSort" >&6; }
+ac_res=$ac_cv_search_slSort
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+  has_kent=no
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing bam_hdr_init" >&5
+$as_echo_n "checking for library containing bam_hdr_init... " >&6; }
+if ${ac_cv_search_bam_hdr_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char bam_hdr_init ();
+int
+main ()
+{
+return bam_hdr_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' jkhts; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_bam_hdr_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_bam_hdr_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_bam_hdr_init+:} false; then :
+
+else
+  ac_cv_search_bam_hdr_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_bam_hdr_init" >&5
+$as_echo "$ac_cv_search_bam_hdr_init" >&6; }
+ac_res=$ac_cv_search_bam_hdr_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+  has_kent=no
+fi
+
+    if test "x${has_kent}" = xno; then
+       as_fn_error $? "
+        ---------------------------------------------
+        Unable to find libkent/libjkhts required for
+        compiling libbeato. Install this and run ./configure
+        with the appropriate LDFLAGS. See the INSTALL
+        for examples.
+        ---------------------------------------------" "$LINENO" 5
+    fi
+else
+  as_fn_error $? "
+        ---------------------------------------------
+        Unable to find libkent headers required for compiling
+        libbeato. Install this and run ./configure with
+        the appropriate CFLAGS. See the INSTALL for
+        examples.
+        ---------------------------------------------" "$LINENO" 5
+fi
+
+done
+
+
+# Integrated htslib-specific defines
 
 $as_echo "#define USE_HTSLIB 1" >>confdefs.h
 
-fi
+
+$as_echo "#define UCSC_CRAM 1" >>confdefs.h
+
+
+$as_echo "#define KNETFILE_HOOKS 1" >>confdefs.h
+
 
 # Large file support
 # Check whether --enable-largefile was given.
@@ -13423,7 +13537,7 @@ else
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -13469,7 +13583,7 @@ else
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -13493,7 +13607,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -13538,7 +13652,7 @@ else
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -13562,7 +13676,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -14782,7 +14896,7 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile beato/Makefile jkweb/Makefile"
+ac_config_files="$ac_config_files Makefile beato/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -15806,7 +15920,6 @@ do
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "beato/Makefile") CONFIG_FILES="$CONFIG_FILES beato/Makefile" ;;
-    "jkweb/Makefile") CONFIG_FILES="$CONFIG_FILES jkweb/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
