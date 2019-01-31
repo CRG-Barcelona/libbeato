@@ -6,10 +6,10 @@
 #ifndef BBIAUGMENT_H
 #define BBIAUGMENT_H
 
-struct bbiFile *bbiFileOpenWithDir(char *fileName, bits32 sig, char *typeName, char *udcDir);
+struct bbiFile* bbiFileOpenWithDir(char* fileName, bits32 sig, char* typeName, char* udcDir);
 /* same (mostly) as bbiFileOpen in bbiFile.c, but allows setting the temporary dir */
 
-struct bbiFile *bigWigFileOpenWithDir(char *fileName, char *udcDir);
+struct bbiFile* bigWigFileOpenWithDir(char* fileName, char* udcDir);
 /* Open up big wig file with a specified temporary UDC dir. */
 
 #endif
