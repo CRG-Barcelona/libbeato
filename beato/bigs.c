@@ -278,8 +278,8 @@ struct perBaseWig* perBaseWigLoadContinue(struct metaBig* mb, char* chrom, int s
     return list;
 }
 
-struct perBaseWig* perBaseWigLoad(char* wigFile, char* chrom, int start, int end)
 /* Load all the regions from a wig or bigWig into a list of arrays basically. */
+struct perBaseWig* perBaseWigLoad(char* wigFile, char* chrom, int start, int end)
 {
     struct metaBig* mb = metaBigOpen(wigFile, NULL);
     if (mb->type != isaBigWig) {
@@ -292,6 +292,7 @@ struct perBaseWig* perBaseWigLoad(char* wigFile, char* chrom, int start, int end
     return list;
 }
 
+/* Some dumb helper function. */
 static void chromOob(struct metaBig* mb, char* chrom, int* start, int* end)
 {
     int csize = hashIntVal(mb->chromSizeHash, chrom);
@@ -301,9 +302,9 @@ static void chromOob(struct metaBig* mb, char* chrom, int* start, int* end)
         *end = csize;
 }
 
-static void perBaseWigLoadHugeContinue(struct metaBig* mb, struct perBaseWig* big_pbw, int* big_offset, struct bed* section)
 /* Load all the regions into one perBaseWig, but with gaps filled  */
 /* in with NA value */
+static void perBaseWigLoadHugeContinue(struct metaBig* mb, struct perBaseWig* big_pbw, int* big_offset, struct bed* section)
 {
     struct perBaseWig* list = NULL;
     int s = section->chromStart;
@@ -339,8 +340,9 @@ struct perBaseWig* perBaseWigLoadHuge(struct metaBig* mb, struct bed* regions)
     if (supposed_size > powl(2, 31))
         errAbort("Requested regions sum to greater than 2^31 = 2,147,483,648 bases. The current implementation is restricted to fewer than this");
     big_pbw = alloc_perBaseWig("various", 0, supposed_size);
-    for (bed = regions; bed != NULL; bed = bed->next)
+    for (bed = regions; bed != NULL; bed = bed->next) {
         perBaseWigLoadHugeContinue(mb, big_pbw, &big_offset, bed);
+    }
     big_pbw->total_coverage = (unsigned)big_offset;
     return big_pbw;
 }
